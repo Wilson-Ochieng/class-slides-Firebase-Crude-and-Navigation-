@@ -482,7 +482,7 @@ Firestore Database<br>
     <h2>Provider Setup <span style="color:var(--muted);font-size:0.6em;font-weight:400">— The Manager</span></h2>
     <div class="slide-sub">// product_provider.dart</div>
     <div class="code" data-lang="Dart">
-<span class="kw">class</span> <span class="ty">ProductProvider</span> <span class="kw">extends</span> <span class="ty">ChangeNotifier</span> {<br>
+<span class="kw">class</span> <span class="ty">ProductProvider</span> <span class="kw">with</span> <span class="ty">ChangeNotifier</span> {<br>
 &nbsp;&nbsp;<span class="kw">final</span> <span class="ty">CollectionReference</span> _productsCollection =<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">FirebaseFirestore</span>.instance.<span class="fn">collection</span>(<span class="str">'products'</span>);<br><br>
 &nbsp;&nbsp;<span class="ty">List</span>&lt;<span class="ty">ProductModel</span>&gt; _products = [];<br>
