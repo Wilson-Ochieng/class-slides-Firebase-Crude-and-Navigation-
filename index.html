@@ -206,6 +206,13 @@
       margin: 16px 0;
     }
 
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 16px 0;
+    }
+
     .nav-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -275,6 +282,7 @@
     .tag-blue  { background: rgba(88,166,255,0.15); color: var(--blue); border: 1px solid rgba(88,166,255,0.4); }
     .tag-red   { background: rgba(255,123,114,0.15); color: var(--red); border: 1px solid rgba(255,123,114,0.4); }
     .tag-yellow{ background: rgba(227,179,65,0.15); color: var(--yellow); border: 1px solid rgba(227,179,65,0.4); }
+    .tag-orange{ background: rgba(247,129,102,0.15); color: var(--orange); border: 1px solid rgba(247,129,102,0.4); }
 
     .flow {
       display: flex; align-items: center;
@@ -354,7 +362,7 @@
 
     @media (max-width: 700px) {
       .slide { padding: 32px 24px 80px; }
-      .crud-grid, .grid-2, .nav-grid { grid-template-columns: 1fr; }
+      .crud-grid, .grid-2, .grid-3, .nav-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -367,12 +375,13 @@
   <!-- SLIDE 1: Title -->
   <div class="slide active" id="slide1">
     <div class="slide-num">Flutter Diploma Course &nbsp;/&nbsp; <span>Session 7</span></div>
-    <div class="slide-title">Firestore <span class="accent">CRUD</span><br>&amp; Navigation + Wishlist</div>
-    <div class="slide-sub">// Building complete e-commerce features with Firebase, Provider &amp; Card Swiper</div>
+    <div class="slide-title">Firestore <span class="accent">CRUD</span><br>&amp; Navigation + Cart</div>
+    <div class="slide-sub">// Building complete e-commerce features with Firebase, Provider, Wishlist &amp; Cart</div>
     <div class="title-tag-row">
       <span class="tag tag-green">Firestore CRUD</span>
       <span class="tag tag-blue">Provider</span>
       <span class="tag tag-red">Wishlist</span>
+      <span class="tag tag-orange">Shopping Cart</span>
       <span class="tag tag-yellow">Card Swiper</span>
     </div>
     <div class="grid-2">
@@ -382,6 +391,7 @@
           <li>Firestore CRUD Operations</li>
           <li>Provider State Management</li>
           <li>Wishlist Feature Implementation</li>
+          <li>Shopping Cart with Quantity</li>
           <li>Image Carousel with Card Swiper</li>
           <li>Navigation & Routing Patterns</li>
         </ul>
@@ -392,8 +402,9 @@
           <li>Product listing with search & filters</li>
           <li>Add/Edit/Delete products (admin)</li>
           <li>Wishlist (favorites) functionality</li>
+          <li>Shopping Cart with quantity picker</li>
           <li>Home screen with auto-scrolling banners</li>
-          <li>Product detail with quantity picker</li>
+          <li>Product detail with add to cart</li>
         </ul>
       </div>
     </div>
@@ -401,7 +412,7 @@
 
   <!-- SLIDE 2: What is CRUD -->
   <div class="slide" id="slide2">
-    <div class="slide-num">Slide <span>02</span> / 16</div>
+    <div class="slide-num">Slide <span>02</span> / 17</div>
     <h2>What is <span style="color:var(--green)">CRUD?</span></h2>
     <div class="slide-sub">// The four fundamental database operations</div>
     <div class="crud-grid">
@@ -443,9 +454,117 @@
     </div>
   </div>
 
-  <!-- SLIDE 3: Wishlist Provider -->
+  <!-- SLIDE 3: Cart Provider -->
   <div class="slide" id="slide3">
-    <div class="slide-num">Slide <span>03</span> / 16</div>
+    <div class="slide-num">Slide <span>03</span> / 17</div>
+    <h2>🛒 Cart <span style="color:var(--orange)">Provider</span></h2>
+    <div class="slide-sub">// Managing shopping cart state with Provider</div>
+    <div class="code" data-lang="Dart">
+<span class="kw">class</span> <span class="ty">CartProvider</span> <span class="kw">with</span> <span class="ty">ChangeNotifier</span> {<br>
+&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">CartModel</span>&gt; _cartItems = {};<br><br>
+&nbsp;&nbsp;<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">CartModel</span>&gt; <span class="kw">get</span> cartItems =&gt; _cartItems;<br>
+&nbsp;&nbsp;<span class="kw">int</span> <span class="kw">get</span> cartCount =&gt; _cartItems.length;<br>
+&nbsp;&nbsp;<span class="kw">double</span> <span class="kw">get</span> totalAmount {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">double</span> total = <span class="num">0.0</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">for</span> (<span class="kw">var</span> item <span class="kw">in</span> _cartItems.values) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;total += item.price * item.quantity;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> total;<br>
+&nbsp;&nbsp;}<br><br>
+&nbsp;&nbsp;<span class="kw">void</span> <span class="fn">addToCart</span>({<span class="kw">required</span> <span class="ty">ProductModel</span> product}) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (_cartItems.<span class="fn">containsKey</span>(product.id)) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_cartItems[product.id]!.quantity++;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;} <span class="kw">else</span> {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_cartItems[product.id] = <span class="ty">CartModel</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;productId: product.id,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;price: product.price,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;quantity: <span class="num">1</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">notifyListeners</span>();<br>
+&nbsp;&nbsp;}<br>
+}
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Cart Features</h3>
+        <ul>
+          <li>✅ Add/Remove items</li>
+          <li>✅ Update quantities</li>
+          <li>✅ Calculate totals</li>
+          <li>✅ Persist during session</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Cart Model</h3>
+        <div class="code" style="margin:0;padding:12px">
+<span class="kw">class</span> <span class="ty">CartModel</span> {<br>
+&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">String</span> productId;<br>
+&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">double</span> price;<br>
+&nbsp;&nbsp;<span class="kw">int</span> quantity;<br>
+}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Add to Cart Button -->
+  <div class="slide" id="slide4">
+    <div class="slide-num">Slide <span>04</span> / 17</div>
+    <h2>➕ Add to Cart <span style="color:var(--green)">Button</span></h2>
+    <div class="slide-sub">// Reusable add to cart widget with visual feedback</div>
+    <div class="code" data-lang="Dart">
+<span class="kw">class</span> <span class="ty">AddToCartButton</span> <span class="kw">extends</span> <span class="ty">StatelessWidget</span> {<br>
+&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">ProductModel</span> product;<br>
+&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">bool</span> isCompact;<br><br>
+&nbsp;&nbsp;<span class="op">@override</span><br>
+&nbsp;&nbsp;<span class="ty">Widget</span> <span class="fn">build</span>(<span class="ty">BuildContext</span> context) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> cartProvider = <span class="ty">Provider</span>.<span class="fn">of</span>&lt;<span class="ty">CartProvider</span>&gt;(context);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> isInCart = cartProvider.<span class="fn">isInCart</span>(product.id);<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">Material</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderRadius: <span class="ty">BorderRadius</span>.<span class="fn">circular</span>(<span class="num">25</span>),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color: isInCart ? <span class="ty">Colors</span>.green : <span class="ty">Colors</span>.blue,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;child: <span class="ty">InkWell</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderRadius: <span class="ty">BorderRadius</span>.<span class="fn">circular</span>(<span class="num">25</span>),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onTap: () {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (product.stock &gt; <span class="num">0</span>) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cartProvider.<span class="fn">addToCart</span>(product: product);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Show success message</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;child: <span class="ty">Padding</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;padding: isCompact <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;? <span class="kw">const</span> <span class="ty">EdgeInsets</span>.all(<span class="num">8</span>) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="kw">const</span> <span class="ty">EdgeInsets</span>.symmetric(horizontal: <span class="num">12</span>, vertical: <span class="num">6</span>),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;child: <span class="ty">Row</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mainAxisSize: <span class="ty">MainAxisSize</span>.min,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;children: [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">Icon</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;isInCart ? <span class="ty">Icons</span>.check : <span class="ty">Icons</span>.shopping_cart,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color: <span class="ty">Colors</span>.white,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (!isCompact && !isInCart) <span class="ty">SizedBox</span>(width: <span class="num">4</span>),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (!isCompact && !isInCart) <span class="ty">Text</span>(<span class="str">'Add'</span>, style: <span class="ty">TextStyle</span>(color: <span class="ty">Colors</span>.white)),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;);<br>
+&nbsp;&nbsp;}<br>
+}
+    </div>
+    <div class="flow">
+      <span class="flow-step">User taps</span><span class="flow-arrow">→</span>
+      <span class="flow-step">Check stock</span><span class="flow-arrow">→</span>
+      <span class="flow-step">Check if in cart</span><span class="flow-arrow">→</span>
+      <span class="flow-step">Add/Update quantity</span><span class="flow-arrow">→</span>
+      <span class="flow-step">Update UI</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Wishlist Provider -->
+  <div class="slide" id="slide5">
+    <div class="slide-num">Slide <span>05</span> / 17</div>
     <h2>❤️ Wishlist <span style="color:var(--red)">Provider</span></h2>
     <div class="slide-sub">// Managing favorites locally or in Firestore</div>
     <div class="code" data-lang="Dart">
@@ -484,9 +603,9 @@
     </div>
   </div>
 
-  <!-- SLIDE 4: Heart Button Widget -->
-  <div class="slide" id="slide4">
-    <div class="slide-num">Slide <span>04</span> / 16</div>
+  <!-- SLIDE 6: Heart Button Widget -->
+  <div class="slide" id="slide6">
+    <div class="slide-num">Slide <span>06</span> / 17</div>
     <h2>❤️ Heart Button <span style="color:var(--orange)">Widget</span></h2>
     <div class="slide-sub">// Reusable favorite toggler with visual feedback</div>
     <div class="code" data-lang="Dart">
@@ -499,29 +618,25 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> wishlistProvider = <span class="ty">Provider</span>.<span class="fn">of</span>&lt;<span class="ty">WishlistProvider</span>&gt;(context);<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> isInWishlist = wishlistProvider.<span class="fn">isProdinWishList</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;productId: product.id);<br><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">IconButton</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onPressed: () =&gt; wishlistProvider.<span class="fn">addOrRemoveFromWishList</span>(product: product),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;icon: <span class="ty">Icon</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;isInWishlist ? <span class="ty">Icons</span>.favorite : <span class="ty">Icons</span>.favorite_border,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color: isInWishlist ? <span class="ty">Colors</span>.red : <span class="ty">Colors</span>.grey,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;size: size,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">Container</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;decoration: <span class="ty">BoxDecoration</span>(color: bkgColor, shape: <span class="ty">BoxShape</span>.circle),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;child: <span class="ty">IconButton</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onPressed: () =&gt; wishlistProvider.<span class="fn">addOrRemoveFromWishList</span>(product: product),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;icon: <span class="ty">Icon</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;isInWishlist ? <span class="ty">Icons</span>.favorite : <span class="ty">Icons</span>.favorite_border,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color: isInWishlist ? <span class="ty">Colors</span>.red : <span class="ty">Colors</span>.grey,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;size: size,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
 &nbsp;&nbsp;&nbsp;&nbsp;);<br>
 &nbsp;&nbsp;}<br>
 }
     </div>
-    <div class="flow">
-      <span class="flow-step">User taps</span><span class="flow-arrow">→</span>
-      <span class="flow-step">Check status</span><span class="flow-arrow">→</span>
-      <span class="flow-step">Add/Remove from Map</span><span class="flow-arrow">→</span>
-      <span class="flow-step">notifyListeners()</span><span class="flow-arrow">→</span>
-      <span class="flow-step">UI updates color</span>
-    </div>
   </div>
 
-  <!-- SLIDE 5: Card Swiper Package -->
-  <div class="slide" id="slide5">
-    <div class="slide-num">Slide <span>05</span> / 16</div>
+  <!-- SLIDE 7: Card Swiper Package -->
+  <div class="slide" id="slide7">
+    <div class="slide-num">Slide <span>07</span> / 17</div>
     <h2>🖼️ Card Swiper <span style="color:var(--cyan)">Package</span></h2>
     <div class="slide-sub">// Adding auto-scrolling image carousels to your app</div>
     <div class="code" data-lang="Dart">
@@ -548,43 +663,35 @@
 &nbsp;&nbsp;)<br>
 )
     </div>
-    <div class="card">
-      <h3>Swiper Features</h3>
-      <ul>
-        <li>⏩ <strong>autoplay</strong> — Auto-scroll through images</li>
-        <li>🎯 <strong>pagination</strong> — Visual dot indicators</li>
-        <li>🔄 <strong>loop</strong> — Infinite scrolling (optional)</li>
-        <li>📱 <strong>responsive</strong> — Works on any screen size</li>
-      </ul>
-    </div>
   </div>
 
-  <!-- SLIDE 6: HomeScreen with Swiper + Wishlist -->
-  <div class="slide" id="slide6">
-    <div class="slide-num">Slide <span>06</span> / 16</div>
-    <h2>🏠 Complete <span style="color:var(--green)">HomeScreen</span></h2>
-    <div class="slide-sub">// Integrating carousel, categories, and product grid</div>
+  <!-- SLIDE 8: Product Widget with Cart -->
+  <div class="slide" id="slide8">
+    <div class="slide-num">Slide <span>08</span> / 17</div>
+    <h2>📦 Product <span style="color:var(--green)">Widget</span> with Cart</h2>
+    <div class="slide-sub">// Reusable product card with add to cart + wishlist</div>
     <div class="code" data-lang="Dart">
-<span class="kw">class</span> <span class="ty">HomeScreen</span> <span class="kw">extends</span> <span class="ty">StatelessWidget</span> {<br>
+<span class="kw">class</span> <span class="ty">ProductWidget</span> <span class="kw">extends</span> <span class="ty">StatelessWidget</span> {<br>
+&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">ProductModel</span> product;<br>
+&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">bool</span> isCompact;<br><br>
 &nbsp;&nbsp;<span class="op">@override</span><br>
 &nbsp;&nbsp;<span class="ty">Widget</span> <span class="fn">build</span>(<span class="ty">BuildContext</span> context) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">Scaffold</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;appBar: <span class="ty">AppBar</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;title: <span class="ty">Text</span>(<span class="str">'SmartShop'</span>),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;actions: [<span class="ty">HeartButtonWidget</span>(product: ...)],<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;body: <span class="ty">SingleChildScrollView</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;child: <span class="ty">Column</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;children: [<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Banner Carousel</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">Swiper</span>(...),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Category Row</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">CategoryRow</span>(),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Featured Products Grid</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">FeaturedProducts</span>(),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">ProductWidget</span>(product: product),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> cartProvider = <span class="ty">Provider</span>.<span class="fn">of</span>&lt;<span class="ty">CartProvider</span>&gt;(context);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> isInCart = cartProvider.<span class="fn">isInCart</span>(product.id);<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">Container</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;decoration: <span class="ty">BoxDecoration</span>(...),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;child: <span class="ty">Column</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;children: [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Image with heart overlay</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">Stack</span>(...),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Product info with price and add button</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">Row</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;children: [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">Text</span>(<span class="str">'KES \${product.price}'</span>),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">AddToCartButton</span>(product: product, isCompact: isCompact),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
 &nbsp;&nbsp;&nbsp;&nbsp;);<br>
 &nbsp;&nbsp;}<br>
@@ -592,27 +699,41 @@
     </div>
   </div>
 
-  <!-- SLIDE 7: Wishlist Screen -->
-  <div class="slide" id="slide7">
-    <div class="slide-num">Slide <span>07</span> / 16</div>
-    <h2>❤️ Wishlist <span style="color:var(--red)">Screen</span></h2>
-    <div class="slide-sub">// Displaying favorite products</div>
+  <!-- SLIDE 9: Cart Screen -->
+  <div class="slide" id="slide9">
+    <div class="slide-num">Slide <span>09</span> / 17</div>
+    <h2>🛒 Cart <span style="color:var(--orange)">Screen</span></h2>
+    <div class="slide-sub">// Displaying cart items with quantity controls</div>
     <div class="code" data-lang="Dart">
-<span class="kw">class</span> <span class="ty">WishlistScreen</span> <span class="kw">extends</span> <span class="ty">StatelessWidget</span> {<br>
+<span class="kw">class</span> <span class="ty">CartScreen</span> <span class="kw">extends</span> <span class="ty">StatelessWidget</span> {<br>
 &nbsp;&nbsp;<span class="op">@override</span><br>
 &nbsp;&nbsp;<span class="ty">Widget</span> <span class="fn">build</span>(<span class="ty">BuildContext</span> context) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">Consumer</span>&lt;<span class="ty">WishlistProvider</span>&gt;(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;builder: (ctx, provider, _) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> wishlistProducts = provider.wishlistProducts;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (wishlistProducts.<span class="fn">isEmpty</span>) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">EmptyBagWidget</span>(...);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">GridView</span>.<span class="fn">builder</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;itemCount: wishlistProducts.length,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gridDelegate: ...,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;itemBuilder: (ctx, i) =&gt; <span class="ty">ProductWidget</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;product: wishlistProducts[i]<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">Consumer</span>&lt;<span class="ty">CartProvider</span>&gt;(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;builder: (ctx, cartProvider, _) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (cartProvider.cartItems.<span class="fn">isEmpty</span>) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">EmptyCartWidget</span>();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">Column</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;children: [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// List of cart items</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">Expanded</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;child: <span class="ty">ListView</span>.<span class="fn">builder</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;itemCount: cartProvider.cartItems.length,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;itemBuilder: (ctx, i) =&gt; <span class="ty">CartItemWidget</span>(...),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Bottom total bar</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">Container</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;padding: <span class="kw">const</span> <span class="ty">EdgeInsets</span>.all(<span class="num">16</span>),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;child: <span class="ty">Row</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mainAxisAlignment: <span class="ty">MainAxisAlignment</span>.spaceBetween,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;children: [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">Text</span>(<span class="str">'Total:'</span>),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">Text</span>(<span class="str">'KES \${cartProvider.totalAmount}'</span>),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
 &nbsp;&nbsp;&nbsp;&nbsp;);<br>
@@ -621,9 +742,9 @@
     </div>
   </div>
 
-  <!-- SLIDE 8: Navigation Types -->
-  <div class="slide" id="slide8">
-    <div class="slide-num">Slide <span>08</span> / 16</div>
+  <!-- SLIDE 10: Navigation Types -->
+  <div class="slide" id="slide10">
+    <div class="slide-num">Slide <span>10</span> / 17</div>
     <h2>Navigation <span style="color:var(--blue)">in Flutter</span></h2>
     <div class="slide-sub">// Navigator 2.0 patterns and best practices</div>
     <div class="nav-grid">
@@ -640,9 +761,9 @@
     </table>
   </div>
 
-  <!-- SLIDE 9: Passing Data to Detail Screen -->
-  <div class="slide" id="slide9">
-    <div class="slide-num">Slide <span>09</span> / 16</div>
+  <!-- SLIDE 11: Passing Data to Detail Screen -->
+  <div class="slide" id="slide11">
+    <div class="slide-num">Slide <span>11</span> / 17</div>
     <h2>Passing Data <span style="color:var(--yellow)">to Detail Screen</span></h2>
     <div class="slide-sub">// Two approaches explained</div>
     <div class="grid-2">
@@ -676,9 +797,9 @@
     </div>
   </div>
 
-  <!-- SLIDE 10: CREATE Operation -->
-  <div class="slide" id="slide10">
-    <div class="slide-num">Slide <span>10</span> / 16</div>
+  <!-- SLIDE 12: CREATE Operation -->
+  <div class="slide" id="slide12">
+    <div class="slide-num">Slide <span>12</span> / 17</div>
     <h2>➕ CREATE <span style="color:var(--green)">Implementation</span></h2>
     <div class="slide-sub">// Adding a new product to Firestore</div>
     <div class="flow">
@@ -709,9 +830,9 @@
     </div>
   </div>
 
-  <!-- SLIDE 11: READ Operation -->
-  <div class="slide" id="slide11">
-    <div class="slide-num">Slide <span>11</span> / 16</div>
+  <!-- SLIDE 13: READ Operation -->
+  <div class="slide" id="slide13">
+    <div class="slide-num">Slide <span>13</span> / 17</div>
     <h2>📖 READ <span style="color:var(--blue)">Implementation</span></h2>
     <div class="slide-sub">// Fetching products from Firestore</div>
     <div class="code" data-lang="Dart">
@@ -736,9 +857,9 @@
     </div>
   </div>
 
-  <!-- SLIDE 12: UPDATE & DELETE -->
-  <div class="slide" id="slide12">
-    <div class="slide-num">Slide <span>12</span> / 16</div>
+  <!-- SLIDE 14: UPDATE & DELETE -->
+  <div class="slide" id="slide14">
+    <div class="slide-num">Slide <span>14</span> / 17</div>
     <h2>✏️ UPDATE &amp; <span style="color:var(--red)">DELETE</span></h2>
     <div class="slide-sub">// Modifying and removing documents</div>
     <div class="grid-2">
@@ -775,9 +896,9 @@
     </div>
   </div>
 
-  <!-- SLIDE 13: SearchScreen with Filters -->
-  <div class="slide" id="slide13">
-    <div class="slide-num">Slide <span>13</span> / 16</div>
+  <!-- SLIDE 15: SearchScreen with Filters -->
+  <div class="slide" id="slide15">
+    <div class="slide-num">Slide <span>15</span> / 17</div>
     <h2>🔍 Search <span style="color:var(--cyan)">Screen</span></h2>
     <div class="slide-sub">// Real-time search + category filters</div>
     <div class="code" data-lang="Dart">
@@ -806,39 +927,9 @@
     </div>
   </div>
 
-  <!-- SLIDE 14: Refresh Pattern -->
-  <div class="slide" id="slide14">
-    <div class="slide-num">Slide <span>14</span> / 16</div>
-    <h2>🔄 Refresh Pattern</h2>
-    <div class="slide-sub">// Reloading data after navigation returns</div>
-    <div class="code" data-lang="Dart">
-<span class="cm">// In ProductsScreen.dart</span><br>
-floatingActionButton: <span class="ty">FloatingActionButton</span>(<br>
-&nbsp;&nbsp;onPressed: () <span class="kw">async</span> {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> result = <span class="kw">await</span> <span class="ty">Navigator</span>.<span class="fn">push</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;context,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">MaterialPageRoute</span>(builder: (_) =&gt; <span class="ty">ProductFormScreen</span>()),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Refresh if product was added/updated</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (result == <span class="kw">true</span> &amp;&amp; mounted) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;context.<span class="fn">read</span>&lt;<span class="ty">ProductProvider</span>&gt;().<span class="fn">fetchProducts</span>();<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;child: <span class="ty">Icon</span>(<span class="ty">Icons</span>.add),<br>
-);
-    </div>
-    <div class="card">
-      <ul>
-        <li>✅ Return <code>true</code> from form screen on success</li>
-        <li>✅ Always check <code>mounted</code> before calling provider methods</li>
-        <li>✅ Refresh after Create, Update, and Delete</li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- SLIDE 15: Complete Architecture -->
-  <div class="slide" id="slide15">
-    <div class="slide-num">Slide <span>15</span> / 16</div>
+  <!-- SLIDE 16: Complete Architecture -->
+  <div class="slide" id="slide16">
+    <div class="slide-num">Slide <span>16</span> / 17</div>
     <h2>🏗️ Complete <span style="color:var(--green)">Architecture</span></h2>
     <div class="diagram">
 <span class="dim-hl">┌───────────── APP FLOW ─────────────────────────────────────────┐</span>
@@ -846,17 +937,17 @@ floatingActionButton: <span class="ty">FloatingActionButton</span>(<br>
 │                   ↓                                               │
 │              ProductsScreen (GridView)                           │
 │                   ↓                                               │
-│         ProductDetailScreen ← WishlistScreen                     │
+│         ProductDetailScreen ← WishlistScreen ← CartScreen        │
 │                   ↓                                               │
 │         ProductFormScreen (Add/Edit)                            │
 <span class="dim-hl">└────────────────────────────────────────────────────────────────┘</span>
 
 <span class="dim-blue">┌───────────── PROVIDER LAYER ────────────────────────────────────┐</span>
-│  ProductProvider   │  WishlistProvider   │  UserProvider         │
-│  - fetchProducts   │  - addToWishlist    │  - login/register     │
-│  - addProduct      │  - removeFromWish   │  - getUser            │
-│  - updateProduct   │  - isInWishlist     │                       │
-│  - deleteProduct   │  - clearWishlist    │                       │
+│  ProductProvider   │  WishlistProvider   │  CartProvider         │
+│  - fetchProducts   │  - addToWishlist    │  - addToCart          │
+│  - addProduct      │  - removeFromWish   │  - removeFromCart     │
+│  - updateProduct   │  - isInWishlist     │  - updateQuantity     │
+│  - deleteProduct   │  - clearWishlist    │  - getTotal           │
 <span class="dim-blue">└────────────────────────────────────────────────────────────────┘</span>
 
 <span class="dim-yellow">┌───────────── FIREBASE SERVICES ─────────────────────────────────┐</span>
@@ -865,23 +956,25 @@ floatingActionButton: <span class="ty">FloatingActionButton</span>(<br>
     </div>
   </div>
 
-  <!-- SLIDE 16: Homework & Takeaways -->
-  <div class="slide" id="slide16">
-    <div class="slide-num">Slide <span>16</span> / 16</div>
+  <!-- SLIDE 17: Homework & Takeaways -->
+  <div class="slide" id="slide17">
+    <div class="slide-num">Slide <span>17</span> / 17</div>
     <h2>📚 Homework &amp; <span style="color:var(--green)">Takeaways</span></h2>
     <div class="task-list">
       <div class="task-item"><div class="task-num">1</div><div class="task-text">Implement the Card Swiper carousel on your home screen</div></div>
       <div class="task-item"><div class="task-num">2</div><div class="task-text">Add wishlist functionality to the search screen</div></div>
       <div class="task-item"><div class="task-num">3</div><div class="task-text">Create a dedicated WishlistScreen showing saved products</div></div>
-      <div class="task-item"><div class="task-num">4</div><div class="task-text">Implement category filtering in the search screen</div></div>
+      <div class="task-item"><div class="task-num">4</div><div class="task-text">Implement shopping cart with quantity picker</div></div>
       <div class="task-item"><div class="task-num">5</div><div class="task-text">Add delete confirmation dialog for product deletion</div></div>
+      <div class="task-item"><div class="task-num">6</div><div class="task-text">Display cart badge count in app bar</div></div>
     </div>
     <div class="card" style="border-color:rgba(63,185,80,0.4);margin-top:10px">
       <h3>⭐ Bonus Challenges</h3>
       <ul>
-        <li>Persist wishlist to Firestore (save across sessions)</li>
+        <li>Persist wishlist and cart to Firestore (save across sessions)</li>
         <li>Add pull-to-refresh on products screen</li>
         <li>Implement search debouncing for better performance</li>
+        <li>Add stock validation when adding to cart</li>
       </ul>
     </div>
     <div class="takeaway">
@@ -889,20 +982,21 @@ floatingActionButton: <span class="ty">FloatingActionButton</span>(<br>
       <div class="takeaway-item"><span class="ti-icon">✓</span>CRUD operations map directly to Firestore methods</div>
       <div class="takeaway-item"><span class="ti-icon">✓</span>Always confirm destructive actions (Delete)</div>
       <div class="takeaway-item"><span class="ti-icon">✓</span>Refresh data after mutations for consistency</div>
-      <div class="takeaway-item"><span class="ti-icon">✓</span>Card Swiper gives professional-looking carousels</div>
+      <div class="takeaway-item"><span class="ti-icon">✓</span>Cart and Wishlist need separate state management</div>
+      <div class="takeaway-item"><span class="ti-icon">✓</span>Validate stock before adding to cart</div>
     </div>
   </div>
 
 </div>
 
-<div id="slide-counter"><span class="cur" id="cur">1</span> / <span id="tot">16</span></div>
+<div id="slide-counter"><span class="cur" id="cur">1</span> / <span id="tot">17</span></div>
 <div id="nav-controls">
   <button class="nav-btn" id="prevBtn" onclick="go(-1)">← Prev</button>
   <button class="nav-btn primary" id="nextBtn" onclick="go(1)">Next →</button>
 </div>
 
 <script>
-  const total = 16;
+  const total = 17;
   let cur = 1;
 
   function go(dir) {
