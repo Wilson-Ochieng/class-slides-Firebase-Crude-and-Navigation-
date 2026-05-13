@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Firestore CRUD & Navigation — Flutter Diploma</title>
+  <title>Firestore CRUD & Navigation — Flutter Diploma (Updated)</title>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -35,7 +35,6 @@
       overflow: hidden;
     }
 
-    /* ── Progress Bar ── */
     #progress-bar {
       position: fixed; top: 0; left: 0;
       height: 2px; background: var(--green);
@@ -44,7 +43,6 @@
       box-shadow: 0 0 8px var(--green);
     }
 
-    /* ── Slide shell ── */
     .slides-wrap {
       width: 100vw; height: 100vh;
       position: relative; overflow: hidden;
@@ -69,7 +67,6 @@
       z-index: 5;
     }
 
-    /* ── Slide number badge ── */
     .slide-num {
       font-family: var(--mono);
       font-size: 11px; color: var(--muted);
@@ -78,7 +75,6 @@
     }
     .slide-num span { color: var(--green); }
 
-    /* ── Typography ── */
     .slide-title {
       font-family: var(--display);
       font-size: clamp(28px, 4vw, 52px);
@@ -110,7 +106,6 @@
       margin-bottom: 12px;
     }
 
-    /* ── Code block ── */
     .code {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -139,7 +134,6 @@
     .op { color: var(--orange); }
     .num { color: var(--green); }
 
-    /* ── Cards ── */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -162,7 +156,6 @@
       color: var(--green);
     }
 
-    /* ── CRUD 4-grid ── */
     .crud-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -206,7 +199,6 @@
     .c-delete .op-letter { color: var(--red); }
     .c-delete .op-fn { color: var(--red); }
 
-    /* ── 2-col grid ── */
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -214,7 +206,6 @@
       margin: 16px 0;
     }
 
-    /* ── Nav cards ── */
     .nav-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -236,7 +227,6 @@
       font-size: 13px; color: var(--muted);
     }
 
-    /* ── Table ── */
     table {
       width: 100%; border-collapse: collapse;
       font-size: 14px; margin: 16px 0;
@@ -257,10 +247,7 @@
       color: #cdd9e5;
       font-family: var(--mono); font-size: 13px;
     }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(255,255,255,0.02); }
 
-    /* ── Diagram ── */
     .diagram {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -275,19 +262,20 @@
     .diagram .dim-blue { color: var(--blue); }
     .diagram .dim-yellow { color: var(--yellow); }
 
-    /* ── Tag pill ── */
     .tag {
       display: inline-block;
-      padding: 3px 10px;
+      padding: 3px 12px;
       border-radius: 20px;
       font-family: var(--mono);
       font-size: 11px; letter-spacing: 1px;
       text-transform: uppercase;
+      margin-right: 8px;
     }
     .tag-green { background: rgba(63,185,80,0.15); color: var(--green); border: 1px solid rgba(63,185,80,0.4); }
     .tag-blue  { background: rgba(88,166,255,0.15); color: var(--blue); border: 1px solid rgba(88,166,255,0.4); }
+    .tag-red   { background: rgba(255,123,114,0.15); color: var(--red); border: 1px solid rgba(255,123,114,0.4); }
+    .tag-yellow{ background: rgba(227,179,65,0.15); color: var(--yellow); border: 1px solid rgba(227,179,65,0.4); }
 
-    /* ── Step flow ── */
     .flow {
       display: flex; align-items: center;
       flex-wrap: wrap; gap: 8px;
@@ -303,7 +291,6 @@
     }
     .flow-arrow { color: var(--green); font-size: 16px; }
 
-    /* ── Takeaway list ── */
     .takeaway {
       display: flex; flex-direction: column; gap: 10px;
       margin: 14px 0;
@@ -318,7 +305,6 @@
     }
     .takeaway-item .ti-icon { color: var(--green); font-size: 16px; flex-shrink: 0; }
 
-    /* ── Homework ── */
     .task-list { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
     .task-item {
       display: flex; align-items: center; gap: 14px;
@@ -336,9 +322,7 @@
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
-    .task-text { font-size: 15px; color: #cdd9e5; }
 
-    /* ── Navigation controls ── */
     #nav-controls {
       position: fixed; bottom: 28px; right: 32px;
       display: flex; align-items: center; gap: 10px;
@@ -356,7 +340,6 @@
     }
     .nav-btn:hover { background: var(--surface2); border-color: var(--green); }
     .nav-btn.primary { background: rgba(63,185,80,0.15); border-color: var(--green); color: var(--green); }
-    .nav-btn.primary:hover { background: rgba(63,185,80,0.25); }
 
     #slide-counter {
       position: fixed; bottom: 28px; left: 32px;
@@ -365,41 +348,13 @@
     }
     #slide-counter .cur { color: var(--green); font-weight: 700; }
 
-    /* ── Title slide ── */
-    #slide1 .slide-title { font-size: clamp(36px, 5vw, 64px); }
-    .title-tag-row { display: flex; gap: 10px; margin-bottom: 36px; }
-    .outline-grid {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 10px; margin-top: 10px;
-    }
-    .outline-item {
-      display: flex; align-items: center; gap: 10px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px; padding: 13px 16px;
-      font-size: 14px;
-    }
-    .outline-item .oi-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--green); flex-shrink: 0;
-    }
-
-    /* ── Summary slide ── */
-    .summary-grid {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 14px; margin: 14px 0;
-    }
-    .summary-section { }
-
-    /* ── Scrollbar ── */
     .slide::-webkit-scrollbar { width: 4px; }
     .slide::-webkit-scrollbar-track { background: transparent; }
     .slide::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
     @media (max-width: 700px) {
       .slide { padding: 32px 24px 80px; }
-      .crud-grid, .grid-2, .nav-grid, .outline-grid, .summary-grid { grid-template-columns: 1fr; }
-      .slide-title { font-size: 28px; }
+      .crud-grid, .grid-2, .nav-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -412,36 +367,48 @@
   <!-- SLIDE 1: Title -->
   <div class="slide active" id="slide1">
     <div class="slide-num">Flutter Diploma Course &nbsp;/&nbsp; <span>Session 7</span></div>
-    <div class="slide-title">Firestore <span class="accent">CRUD</span><br>&amp; Navigation</div>
-    <div class="slide-sub">// Building data-driven Flutter apps with Firebase &amp; Provider</div>
+    <div class="slide-title">Firestore <span class="accent">CRUD</span><br>&amp; Navigation + Wishlist</div>
+    <div class="slide-sub">// Building complete e-commerce features with Firebase, Provider &amp; Card Swiper</div>
     <div class="title-tag-row">
-      <span class="tag tag-green">Firebase Firestore</span>
-      <span class="tag tag-blue">Flutter Provider</span>
-      <span class="tag tag-green">Navigation</span>
+      <span class="tag tag-green">Firestore CRUD</span>
+      <span class="tag tag-blue">Provider</span>
+      <span class="tag tag-red">Wishlist</span>
+      <span class="tag tag-yellow">Card Swiper</span>
     </div>
-    <div class="outline-grid">
-      <div class="outline-item"><div class="oi-dot"></div>Firestore CRUD Operations</div>
-      <div class="outline-item"><div class="oi-dot"></div>Provider State Management</div>
-      <div class="outline-item"><div class="oi-dot"></div>Create, Read, Update, Delete</div>
-      <div class="outline-item"><div class="oi-dot"></div>Navigation &amp; Routing</div>
-      <div class="outline-item"><div class="oi-dot"></div>Passing Data Between Screens</div>
-      <div class="outline-item"><div class="oi-dot"></div>Best Practices &amp; Patterns</div>
-    </div>
-    <div class="card" style="margin-top:18px;">
-      <p>By the end of this session, you'll build a complete CRUD app with Firebase Firestore and implement seamless navigation in Flutter.</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>📦 Core Topics</h3>
+        <ul>
+          <li>Firestore CRUD Operations</li>
+          <li>Provider State Management</li>
+          <li>Wishlist Feature Implementation</li>
+          <li>Image Carousel with Card Swiper</li>
+          <li>Navigation & Routing Patterns</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🎯 What You'll Build</h3>
+        <ul>
+          <li>Product listing with search & filters</li>
+          <li>Add/Edit/Delete products (admin)</li>
+          <li>Wishlist (favorites) functionality</li>
+          <li>Home screen with auto-scrolling banners</li>
+          <li>Product detail with quantity picker</li>
+        </ul>
+      </div>
     </div>
   </div>
 
   <!-- SLIDE 2: What is CRUD -->
   <div class="slide" id="slide2">
-    <div class="slide-num">Slide <span>02</span> / 15</div>
+    <div class="slide-num">Slide <span>02</span> / 16</div>
     <h2>What is <span style="color:var(--green)">CRUD?</span></h2>
     <div class="slide-sub">// The four fundamental database operations</div>
     <div class="crud-grid">
       <div class="crud-tile c-create">
         <div class="op-letter">C</div>
         <div class="op-name">Create</div>
-        <div class="op-desc">Add new data to the database</div>
+        <div class="op-desc">Add new data to database</div>
         <div class="op-fn">addProduct()</div>
       </div>
       <div class="crud-tile c-read">
@@ -459,297 +426,165 @@
       <div class="crud-tile c-delete">
         <div class="op-letter">D</div>
         <div class="op-name">Delete</div>
-        <div class="op-desc">Remove data</div>
+        <div class="op-desc">Remove data permanently</div>
         <div class="op-fn">deleteProduct()</div>
       </div>
     </div>
-    <div class="code" data-lang="Firestore">
-<span class="cm">// Firestore Data Structure</span><br>
-Firestore Database<br>
-└── <span class="fn">products</span> <span class="cm">(Collection)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="ty">documentId_1</span> <span class="cm">(Document)</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="kw">name</span>: <span class="str">"Laptop"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="kw">price</span>: <span class="num">999.99</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="kw">category</span>: <span class="str">"Electronics"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="kw">stock</span>: <span class="num">10</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="ty">documentId_2</span> <span class="cm">(...)</span>
+    <div class="code" data-lang="Firestore Structure">
+<span class="cm">// Firestore Database Structure</span><br>
+<span class="fn">products</span> <span class="cm">(Collection)</span><br>
+├── <span class="ty">doc_abc123</span> <span class="cm">(Document)</span><br>
+│   ├── <span class="kw">name</span>: <span class="str">"Gaming Laptop"</span><br>
+│   ├── <span class="kw">price</span>: <span class="num">1299.99</span><br>
+│   ├── <span class="kw">category</span>: <span class="str">"Electronics"</span><br>
+│   ├── <span class="kw">stock</span>: <span class="num">15</span><br>
+│   └── <span class="kw">imageUrl</span>: <span class="str">"https://..."</span><br>
+└── <span class="ty">doc_def456</span> <span class="cm">(...)</span>
     </div>
   </div>
 
-  <!-- SLIDE 3: Provider Setup -->
+  <!-- SLIDE 3: Wishlist Provider -->
   <div class="slide" id="slide3">
-    <div class="slide-num">Slide <span>03</span> / 15</div>
-    <h2>Provider Setup <span style="color:var(--muted);font-size:0.6em;font-weight:400">— The Manager</span></h2>
-    <div class="slide-sub">// product_provider.dart</div>
+    <div class="slide-num">Slide <span>03</span> / 16</div>
+    <h2>❤️ Wishlist <span style="color:var(--red)">Provider</span></h2>
+    <div class="slide-sub">// Managing favorites locally or in Firestore</div>
     <div class="code" data-lang="Dart">
-<span class="kw">class</span> <span class="ty">ProductProvider</span> <span class="kw">with</span> <span class="ty">ChangeNotifier</span> {<br>
-&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">CollectionReference</span> _productsCollection =<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">FirebaseFirestore</span>.instance.<span class="fn">collection</span>(<span class="str">'products'</span>);<br><br>
-&nbsp;&nbsp;<span class="ty">List</span>&lt;<span class="ty">ProductModel</span>&gt; _products = [];<br>
-&nbsp;&nbsp;<span class="ty">bool</span> _isLoading = <span class="kw">false</span>;<br><br>
-&nbsp;&nbsp;<span class="cm">// Getters</span><br>
-&nbsp;&nbsp;<span class="ty">List</span>&lt;<span class="ty">ProductModel</span>&gt; <span class="kw">get</span> products =&gt; _products;<br>
-&nbsp;&nbsp;<span class="ty">bool</span> <span class="kw">get</span> isLoading =&gt; _isLoading;<br>
+<span class="kw">class</span> <span class="ty">WishlistProvider</span> <span class="kw">with</span> <span class="ty">ChangeNotifier</span> {<br>
+&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">ProductModel</span>&gt; _wishListItems = {};<br><br>
+&nbsp;&nbsp;<span class="kw">void</span> <span class="fn">addOrRemoveFromWishList</span>({<span class="kw">required</span> <span class="ty">ProductModel</span> product}) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (_wishListItems.<span class="fn">containsKey</span>(product.id)) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_wishListItems.<span class="fn">remove</span>(product.id);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;} <span class="kw">else</span> {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_wishListItems[product.id] = product;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">notifyListeners</span>();<br>
+&nbsp;&nbsp;}<br><br>
+&nbsp;&nbsp;<span class="ty">bool</span> <span class="fn">isProdinWishList</span>({<span class="kw">required</span> <span class="ty">String</span> productId}) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> _wishListItems.<span class="fn">containsKey</span>(productId);<br>
+&nbsp;&nbsp;}<br>
 }
     </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Local Storage Pattern</h3>
+        <ul>
+          <li>✅ Fast, no network latency</li>
+          <li>✅ Works offline</li>
+          <li>⚠️ Lost on app restart (unless persisted)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Firestore Pattern</h3>
+        <ul>
+          <li>✅ Persists across devices</li>
+          <li>✅ Syncs across sessions</li>
+          <li>⚠️ Requires internet connection</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Heart Button Widget -->
+  <div class="slide" id="slide4">
+    <div class="slide-num">Slide <span>04</span> / 16</div>
+    <h2>❤️ Heart Button <span style="color:var(--orange)">Widget</span></h2>
+    <div class="slide-sub">// Reusable favorite toggler with visual feedback</div>
+    <div class="code" data-lang="Dart">
+<span class="kw">class</span> <span class="ty">HeartButtonWidget</span> <span class="kw">extends</span> <span class="ty">StatelessWidget</span> {<br>
+&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">ProductModel</span> product;<br>
+&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">double</span> size;<br>
+&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">Color</span> bkgColor;<br><br>
+&nbsp;&nbsp;<span class="op">@override</span><br>
+&nbsp;&nbsp;<span class="ty">Widget</span> <span class="fn">build</span>(<span class="ty">BuildContext</span> context) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> wishlistProvider = <span class="ty">Provider</span>.<span class="fn">of</span>&lt;<span class="ty">WishlistProvider</span>&gt;(context);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> isInWishlist = wishlistProvider.<span class="fn">isProdinWishList</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;productId: product.id);<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">IconButton</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onPressed: () =&gt; wishlistProvider.<span class="fn">addOrRemoveFromWishList</span>(product: product),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;icon: <span class="ty">Icon</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;isInWishlist ? <span class="ty">Icons</span>.favorite : <span class="ty">Icons</span>.favorite_border,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color: isInWishlist ? <span class="ty">Colors</span>.red : <span class="ty">Colors</span>.grey,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;size: size,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;);<br>
+&nbsp;&nbsp;}<br>
+}
+    </div>
+    <div class="flow">
+      <span class="flow-step">User taps</span><span class="flow-arrow">→</span>
+      <span class="flow-step">Check status</span><span class="flow-arrow">→</span>
+      <span class="flow-step">Add/Remove from Map</span><span class="flow-arrow">→</span>
+      <span class="flow-step">notifyListeners()</span><span class="flow-arrow">→</span>
+      <span class="flow-step">UI updates color</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Card Swiper Package -->
+  <div class="slide" id="slide5">
+    <div class="slide-num">Slide <span>05</span> / 16</div>
+    <h2>🖼️ Card Swiper <span style="color:var(--cyan)">Package</span></h2>
+    <div class="slide-sub">// Adding auto-scrolling image carousels to your app</div>
+    <div class="code" data-lang="Dart">
+<span class="cm">// Add to pubspec.yaml</span><br>
+<span class="str">dependencies:</span><br>
+&nbsp;&nbsp;<span class="str">card_swiper: ^3.0.1</span><br><br>
+<span class="cm">// Usage in HomeScreen</span><br>
+<span class="ty">SizedBox</span>(<br>
+&nbsp;&nbsp;height: size.height * <span class="num">0.25</span>,<br>
+&nbsp;&nbsp;child: <span class="ty">ClipRRect</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;borderRadius: <span class="ty">BorderRadius</span>.<span class="fn">circular</span>(<span class="num">50</span>),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;child: <span class="ty">Swiper</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;autoplay: <span class="kw">true</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;itemBuilder: (ctx, index) =&gt; <span class="ty">Image</span>.<span class="fn">asset</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;banners[index], fit: <span class="ty">BoxFit</span>.cover),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;itemCount: banners.length,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pagination: <span class="ty">SwiperPagination</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;builder: <span class="ty">DotSwiperPaginationBuilder</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;activeColor: <span class="ty">Colors</span>.red,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color: <span class="ty">Colors</span>.white<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;)<br>
+&nbsp;&nbsp;)<br>
+)
+    </div>
     <div class="card">
-      <h3>Key Concepts</h3>
+      <h3>Swiper Features</h3>
       <ul>
-        <li><code>ChangeNotifier</code> — Notifies the UI when data changes</li>
-        <li><code>CollectionReference</code> — Points to a Firestore collection</li>
-        <li><code>_products</code> — Local in-memory cache of product list</li>
-        <li><code>notifyListeners()</code> — Triggers UI rebuild on state change</li>
+        <li>⏩ <strong>autoplay</strong> — Auto-scroll through images</li>
+        <li>🎯 <strong>pagination</strong> — Visual dot indicators</li>
+        <li>🔄 <strong>loop</strong> — Infinite scrolling (optional)</li>
+        <li>📱 <strong>responsive</strong> — Works on any screen size</li>
       </ul>
     </div>
   </div>
 
-  <!-- SLIDE 4: CREATE -->
-  <div class="slide" id="slide4">
-    <div class="slide-num">Slide <span>04</span> / 15</div>
-    <h2><span style="color:var(--green)">CREATE</span> Operation</h2>
-    <div class="slide-sub">// Adding a new product to Firestore</div>
-    <div class="flow">
-      <span class="flow-step">User Input</span><span class="flow-arrow">→</span>
-      <span class="flow-step">Validate Form</span><span class="flow-arrow">→</span>
-      <span class="flow-step">Upload Image</span><span class="flow-arrow">→</span>
-      <span class="flow-step">Save to Firestore</span><span class="flow-arrow">→</span>
-      <span class="flow-step">Refresh List</span>
-    </div>
-    <div class="code" data-lang="Dart">
-<span class="ty">Future</span>&lt;<span class="ty">String</span>?&gt; <span class="fn">addProduct</span>({<br>
-&nbsp;&nbsp;<span class="kw">required</span> <span class="ty">String</span> name,<br>
-&nbsp;&nbsp;<span class="kw">required</span> <span class="ty">double</span> price,<br>
-&nbsp;&nbsp;<span class="kw">required</span> <span class="ty">String</span> category,<br>
-&nbsp;&nbsp;<span class="kw">required</span> <span class="ty">int</span> stock,<br>
-&nbsp;&nbsp;<span class="kw">required</span> <span class="ty">File</span> imageFile,<br>
-}) <span class="kw">async</span> {<br>
-&nbsp;&nbsp;<span class="kw">try</span> {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">String</span> imageUrl = <span class="kw">await</span> <span class="fn">_uploadImage</span>(imageFile); <span class="cm">// 1. Upload</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">await</span> _productsCollection.<span class="fn">add</span>({...});          <span class="cm">// 2. Save</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">await</span> <span class="fn">fetchProducts</span>();                          <span class="cm">// 3. Refresh</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="kw">null</span>;<br>
-&nbsp;&nbsp;} <span class="kw">catch</span> (e) { <span class="kw">return</span> e.<span class="fn">toString</span>(); }<br>
-}
-    </div>
-  </div>
-
-  <!-- SLIDE 5: READ -->
-  <div class="slide" id="slide5">
-    <div class="slide-num">Slide <span>05</span> / 15</div>
-    <h2><span style="color:var(--blue)">READ</span> Operation</h2>
-    <div class="slide-sub">// Fetching all products from Firestore</div>
-    <div class="code" data-lang="Dart">
-<span class="ty">Future</span>&lt;<span class="kw">void</span>&gt; <span class="fn">fetchProducts</span>() <span class="kw">async</span> {<br>
-&nbsp;&nbsp;<span class="fn">_setLoading</span>(<span class="kw">true</span>);<br>
-&nbsp;&nbsp;<span class="kw">try</span> {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Get all documents from collection</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">QuerySnapshot</span> snapshot = <span class="kw">await</span> _productsCollection.<span class="fn">get</span>();<br><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Convert each doc to a ProductModel</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;_products = snapshot.docs.<span class="fn">map</span>((doc) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">ProductModel</span>.<span class="fn">fromMap</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;doc.data() <span class="kw">as</span> <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="kw">dynamic</span>&gt;, doc.id);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}).<span class="fn">toList</span>();<br><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">notifyListeners</span>(); <span class="cm">// Trigger UI rebuild</span><br>
-&nbsp;&nbsp;} <span class="kw">finally</span> { <span class="fn">_setLoading</span>(<span class="kw">false</span>); }<br>
-}
-    </div>
-    <div class="card">
-      <p>💡 <strong style="color:var(--blue)">Pro Tip:</strong> Use <code>Consumer&lt;ProductProvider&gt;</code> to rebuild only the widget subtree that depends on the provider, not the whole screen.</p>
-    </div>
-  </div>
-
-  <!-- SLIDE 6: UPDATE -->
+  <!-- SLIDE 6: HomeScreen with Swiper + Wishlist -->
   <div class="slide" id="slide6">
-    <div class="slide-num">Slide <span>06</span> / 15</div>
-    <h2><span style="color:var(--yellow)">UPDATE</span> Operation</h2>
-    <div class="slide-sub">// Modifying an existing Firestore document</div>
+    <div class="slide-num">Slide <span>06</span> / 16</div>
+    <h2>🏠 Complete <span style="color:var(--green)">HomeScreen</span></h2>
+    <div class="slide-sub">// Integrating carousel, categories, and product grid</div>
     <div class="code" data-lang="Dart">
-<span class="ty">Future</span>&lt;<span class="ty">String</span>?&gt; <span class="fn">updateProduct</span>({<br>
-&nbsp;&nbsp;<span class="kw">required</span> <span class="ty">String</span> productId,<br>
-&nbsp;&nbsp;<span class="kw">required</span> <span class="ty">String</span> name,<br>
-&nbsp;&nbsp;<span class="kw">required</span> <span class="ty">double</span> price,<br>
-&nbsp;&nbsp;<span class="ty">File</span>? newImageFile,<br>
-&nbsp;&nbsp;<span class="kw">required</span> <span class="ty">String</span> existingImageUrl,<br>
-}) <span class="kw">async</span> {<br>
-&nbsp;&nbsp;<span class="kw">try</span> {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">String</span> imageUrl = existingImageUrl;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (newImageFile != <span class="kw">null</span>) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;imageUrl = <span class="kw">await</span> <span class="fn">_uploadImage</span>(newImageFile);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Update only specified fields on the document</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">await</span> _productsCollection.<span class="fn">doc</span>(productId).<span class="fn">update</span>({<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">'name'</span>: name, <span class="str">'price'</span>: price, <span class="str">'imageUrl'</span>: imageUrl,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;});<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">await</span> <span class="fn">fetchProducts</span>();<br>
-&nbsp;&nbsp;} <span class="kw">catch</span> (e) { <span class="kw">return</span> e.<span class="fn">toString</span>(); }<br>
-}
-    </div>
-  </div>
-
-  <!-- SLIDE 7: DELETE -->
-  <div class="slide" id="slide7">
-    <div class="slide-num">Slide <span>07</span> / 15</div>
-    <h2><span style="color:var(--red)">DELETE</span> Operation</h2>
-    <div class="slide-sub">// Removing a document from Firestore</div>
-    <div class="grid-2">
-      <div class="code" data-lang="Dart" style="margin:0">
-<span class="ty">Future</span>&lt;<span class="ty">String</span>?&gt; <span class="fn">deleteProduct</span>(<span class="ty">String</span> id) <span class="kw">async</span> {<br>
-&nbsp;&nbsp;<span class="kw">try</span> {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">await</span> _productsCollection<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<span class="fn">doc</span>(id).<span class="fn">delete</span>();<br><br>
-&nbsp;&nbsp;&nbsp;&nbsp;_products.<span class="fn">removeWhere</span>((p) =&gt; p.id == id);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">notifyListeners</span>();<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="kw">null</span>;<br>
-&nbsp;&nbsp;} <span class="kw">catch</span> (e) { <span class="kw">return</span> e.<span class="fn">toString</span>(); }<br>
-}
-      </div>
-      <div class="code" data-lang="Confirmation" style="margin:0">
-<span class="cm">// Always confirm before delete!</span><br>
-<span class="fn">showDialog</span>&lt;<span class="ty">bool</span>&gt;(<br>
-&nbsp;&nbsp;builder: (ctx) =&gt; <span class="ty">AlertDialog</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;title: <span class="ty">Text</span>(<span class="str">'Delete Product?'</span>),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;actions: [<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">TextButton</span>(...), <span class="cm">// Cancel</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">TextButton</span>(...), <span class="cm">// Confirm</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;],<br>
-&nbsp;&nbsp;),<br>
-);
-      </div>
-    </div>
-    <div class="card">
-      <p>⚠️ Never delete without user confirmation — always show a dialog for destructive actions.</p>
-    </div>
-  </div>
-
-  <!-- SLIDE 8: Navigation Types -->
-  <div class="slide" id="slide8">
-    <div class="slide-num">Slide <span>08</span> / 15</div>
-    <h2>Navigation <span style="color:var(--blue)">in Flutter</span></h2>
-    <div class="slide-sub">// The Navigator stack</div>
-    <div class="nav-grid">
-      <div class="nav-tile">
-        <div class="nav-method">Navigator.push()</div>
-        <div style="font-size:14px;color:var(--text);margin-bottom:4px;font-weight:600">Push</div>
-        <div class="nav-desc">Go to new screen. Previous stays in stack.</div>
-      </div>
-      <div class="nav-tile">
-        <div class="nav-method">Navigator.pop()</div>
-        <div style="font-size:14px;color:var(--text);margin-bottom:4px;font-weight:600">Pop</div>
-        <div class="nav-desc">Go back to previous screen.</div>
-      </div>
-      <div class="nav-tile">
-        <div class="nav-method">Navigator.pushNamed()</div>
-        <div style="font-size:14px;color:var(--text);margin-bottom:4px;font-weight:600">PushNamed</div>
-        <div class="nav-desc">Navigate using a registered route name.</div>
-      </div>
-      <div class="nav-tile">
-        <div class="nav-method">Navigator.pushReplacement()</div>
-        <div style="font-size:14px;color:var(--text);margin-bottom:4px;font-weight:600">PushReplacement</div>
-        <div class="nav-desc">Replace current screen (e.g. after login).</div>
-      </div>
-    </div>
-    <table>
-      <tr><th>Method</th><th>Code</th><th>Use Case</th></tr>
-      <tr><td>Push</td><td>Navigator.push(...)</td><td>Go to detail screen</td></tr>
-      <tr><td>Pop</td><td>Navigator.pop()</td><td>Go back</td></tr>
-      <tr><td>PushNamed</td><td>Navigator.pushNamed('/detail')</td><td>Named route</td></tr>
-      <tr><td>PushReplacement</td><td>Navigator.pushReplacementNamed('/home')</td><td>After login</td></tr>
-    </table>
-  </div>
-
-  <!-- SLIDE 9: Setting Up Routes -->
-  <div class="slide" id="slide9">
-    <div class="slide-num">Slide <span>09</span> / 15</div>
-    <h2>Setting Up <span style="color:var(--blue)">Routes</span></h2>
-    <div class="slide-sub">// main.dart — 3-step registration pattern</div>
-    <div class="code" data-lang="Dart">
-<span class="cm">// STEP 1 — Define route name inside the screen class</span><br>
-<span class="kw">class</span> <span class="ty">ProductDetailScreen</span> <span class="kw">extends</span> <span class="ty">StatelessWidget</span> {<br>
-&nbsp;&nbsp;<span class="kw">static const</span> <span class="ty">String</span> routName = <span class="str">'/ProductDetailScreen'</span>;<br>
-}<br><br>
-<span class="cm">// STEP 2 — Register in MaterialApp</span><br>
-<span class="ty">MaterialApp</span>(<br>
-&nbsp;&nbsp;routes: {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">LoginScreen</span>.routName: (ctx) =&gt; <span class="ty">LoginScreen</span>(),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">ProductDetailScreen</span>.routName: (ctx) =&gt; <span class="ty">ProductDetailScreen</span>(),<br>
-&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;<span class="cm">// STEP 3 — Handle routes that require arguments</span><br>
-&nbsp;&nbsp;onGenerateRoute: (settings) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (settings.name == <span class="ty">ProductDetailScreen</span>.routName) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> product = settings.arguments <span class="kw">as</span> <span class="ty">ProductModel</span>;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">MaterialPageRoute</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;builder: (ctx) =&gt; <span class="ty">ProductDetailScreen</span>(product: product));<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return null</span>;<br>
-&nbsp;&nbsp;},<br>
-);
-    </div>
-  </div>
-
-  <!-- SLIDE 10: Passing Data -->
-  <div class="slide" id="slide10">
-    <div class="slide-num">Slide <span>10</span> / 15</div>
-    <h2>Passing Data <span style="color:var(--muted);font-size:0.6em;font-weight:400">Between Screens</span></h2>
-    <div class="slide-sub">// Two approaches — constructor vs. named route arguments</div>
-    <div class="grid-2">
-      <div>
-        <h3>Method 1 — Constructor</h3>
-        <div class="code" data-lang="Dart" style="margin:0">
-<span class="cm">// Navigate</span><br>
-<span class="ty">Navigator</span>.<span class="fn">push</span>(context,<br>
-&nbsp;&nbsp;<span class="ty">MaterialPageRoute</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;builder: (_) =&gt; <span class="ty">ProductDetailScreen</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;product: product)));<br><br>
-<span class="cm">// Receive</span><br>
-<span class="kw">class</span> <span class="ty">ProductDetailScreen</span> {<br>
-&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">ProductModel</span> product;<br>
-&nbsp;&nbsp;<span class="kw">const</span> <span class="ty">ProductDetailScreen</span>({<span class="kw">required</span> <span class="kw">this</span>.product});<br>
-}
-        </div>
-      </div>
-      <div>
-        <h3>Method 2 — Named + Arguments</h3>
-        <div class="code" data-lang="Dart" style="margin:0">
-<span class="cm">// Navigate</span><br>
-<span class="ty">Navigator</span>.<span class="fn">pushNamed</span>(<br>
-&nbsp;&nbsp;context,<br>
-&nbsp;&nbsp;<span class="ty">ProductDetailScreen</span>.routName,<br>
-&nbsp;&nbsp;arguments: product,<br>
-);<br><br>
-<span class="cm">// Receive</span><br>
-<span class="kw">final</span> product = <span class="ty">ModalRoute</span>.<span class="fn">of</span>(context)!<br>
-&nbsp;&nbsp;.settings.arguments <span class="kw">as</span> <span class="ty">ProductModel</span>;
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SLIDE 11: Products List Screen -->
-  <div class="slide" id="slide11">
-    <div class="slide-num">Slide <span>11</span> / 15</div>
-    <h2>Practical — <span style="color:var(--green)">Products List</span></h2>
-    <div class="slide-sub">// ProductsScreen.dart — Consumer pattern</div>
-    <div class="code" data-lang="Dart">
-<span class="kw">class</span> <span class="ty">ProductsScreen</span> <span class="kw">extends</span> <span class="ty">StatelessWidget</span> {<br>
+<span class="kw">class</span> <span class="ty">HomeScreen</span> <span class="kw">extends</span> <span class="ty">StatelessWidget</span> {<br>
 &nbsp;&nbsp;<span class="op">@override</span><br>
 &nbsp;&nbsp;<span class="ty">Widget</span> <span class="fn">build</span>(<span class="ty">BuildContext</span> context) {<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">Scaffold</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;body: <span class="ty">Consumer</span>&lt;<span class="ty">ProductProvider</span>&gt;(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;builder: (ctx, provider, _) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (provider.isLoading) <span class="kw">return</span> <span class="ty">CircularProgressIndicator</span>();<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">ListView</span>.<span class="fn">builder</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;itemCount: provider.products.length,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;itemBuilder: (ctx, i) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> product = provider.products[i];<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">ListTile</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;title: <span class="ty">Text</span>(product.name),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onTap: () =&gt; <span class="ty">Navigator</span>.<span class="fn">pushNamed</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;context, <span class="ty">ProductDetailScreen</span>.routName,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arguments: product),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;appBar: <span class="ty">AppBar</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;title: <span class="ty">Text</span>(<span class="str">'SmartShop'</span>),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;actions: [<span class="ty">HeartButtonWidget</span>(product: ...)],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;body: <span class="ty">SingleChildScrollView</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;child: <span class="ty">Column</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;children: [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Banner Carousel</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">Swiper</span>(...),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Category Row</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">CategoryRow</span>(),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Featured Products Grid</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">FeaturedProducts</span>(),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">ProductWidget</span>(product: product),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
 &nbsp;&nbsp;&nbsp;&nbsp;);<br>
 &nbsp;&nbsp;}<br>
@@ -757,139 +592,317 @@ Firestore Database<br>
     </div>
   </div>
 
-  <!-- SLIDE 12: Refresh Pattern -->
-  <div class="slide" id="slide12">
-    <div class="slide-num">Slide <span>12</span> / 15</div>
-    <h2>Refresh Pattern <span style="color:var(--muted);font-size:0.6em;font-weight:400">After Navigation</span></h2>
-    <div class="slide-sub">// Reloading data after push returns</div>
+  <!-- SLIDE 7: Wishlist Screen -->
+  <div class="slide" id="slide7">
+    <div class="slide-num">Slide <span>07</span> / 16</div>
+    <h2>❤️ Wishlist <span style="color:var(--red)">Screen</span></h2>
+    <div class="slide-sub">// Displaying favorite products</div>
     <div class="code" data-lang="Dart">
-<span class="cm">// In ProductsScreen.dart — FAB to add a new product</span><br>
+<span class="kw">class</span> <span class="ty">WishlistScreen</span> <span class="kw">extends</span> <span class="ty">StatelessWidget</span> {<br>
+&nbsp;&nbsp;<span class="op">@override</span><br>
+&nbsp;&nbsp;<span class="ty">Widget</span> <span class="fn">build</span>(<span class="ty">BuildContext</span> context) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">Consumer</span>&lt;<span class="ty">WishlistProvider</span>&gt;(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;builder: (ctx, provider, _) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> wishlistProducts = provider.wishlistProducts;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (wishlistProducts.<span class="fn">isEmpty</span>) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">EmptyBagWidget</span>(...);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">GridView</span>.<span class="fn">builder</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;itemCount: wishlistProducts.length,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gridDelegate: ...,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;itemBuilder: (ctx, i) =&gt; <span class="ty">ProductWidget</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;product: wishlistProducts[i]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;);<br>
+&nbsp;&nbsp;}<br>
+}
+    </div>
+  </div>
+
+  <!-- SLIDE 8: Navigation Types -->
+  <div class="slide" id="slide8">
+    <div class="slide-num">Slide <span>08</span> / 16</div>
+    <h2>Navigation <span style="color:var(--blue)">in Flutter</span></h2>
+    <div class="slide-sub">// Navigator 2.0 patterns and best practices</div>
+    <div class="nav-grid">
+      <div class="nav-tile"><div class="nav-method">Navigator.push()</div><div class="nav-desc">Go to new screen (can come back)</div></div>
+      <div class="nav-tile"><div class="nav-method">Navigator.pop()</div><div class="nav-desc">Go back to previous screen</div></div>
+      <div class="nav-tile"><div class="nav-method">Navigator.pushNamed()</div><div class="nav-desc">Use registered route names</div></div>
+      <div class="nav-tile"><div class="nav-method">Navigator.pushReplacement()</div><div class="nav-desc">Replace current screen (login flow)</div></div>
+    </div>
+    <table>
+      <tr><th>Method</th><th>Code Example</th><th>Use Case</th></tr>
+      <tr><td>Push</td><td><code>Navigator.push(...)</code></td><td>Go to detail screen</td></tr>
+      <tr><td>PushNamed</td><td><code>Navigator.pushNamed('/detail')</code></td><td>Named route navigation</td></tr>
+      <tr><td>Pop with Result</td><td><code>Navigator.pop(context, true)</code></td><td>Return data after form submit</td></tr>
+    </table>
+  </div>
+
+  <!-- SLIDE 9: Passing Data to Detail Screen -->
+  <div class="slide" id="slide9">
+    <div class="slide-num">Slide <span>09</span> / 16</div>
+    <h2>Passing Data <span style="color:var(--yellow)">to Detail Screen</span></h2>
+    <div class="slide-sub">// Two approaches explained</div>
+    <div class="grid-2">
+      <div class="code" data-lang="Constructor">
+<span class="cm">// NAVIGATE (push)</span><br>
+<span class="ty">Navigator</span>.<span class="fn">push</span>(<br>
+&nbsp;&nbsp;context,<br>
+&nbsp;&nbsp;<span class="ty">MaterialPageRoute</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;builder: (_) =&gt; <span class="ty">ProductDetailScreen</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;product: product<br>
+&nbsp;&nbsp;&nbsp;&nbsp;)<br>
+&nbsp;&nbsp;)<br>
+);<br><br>
+<span class="cm">// RECEIVE</span><br>
+<span class="kw">class</span> <span class="ty">ProductDetailScreen</span> {<br>
+&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">ProductModel</span> product;<br>
+&nbsp;&nbsp;<span class="kw">const</span> <span class="fn">ProductDetailScreen</span>({<span class="kw">required</span> <span class="kw">this</span>.product});<br>
+}
+      </div>
+      <div class="code" data-lang="Named Route">
+<span class="cm">// NAVIGATE (pushNamed)</span><br>
+<span class="ty">Navigator</span>.<span class="fn">pushNamed</span>(<br>
+&nbsp;&nbsp;context,<br>
+&nbsp;&nbsp;<span class="ty">ProductDetailScreen</span>.routName,<br>
+&nbsp;&nbsp;arguments: product<br>
+);<br><br>
+<span class="cm">// RECEIVE (in didChangeDependencies)</span><br>
+<span class="kw">final</span> product = <span class="ty">ModalRoute</span>.<span class="fn">of</span>(context)!<br>
+&nbsp;&nbsp;.settings.arguments <span class="kw">as</span> <span class="ty">ProductModel</span>;
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: CREATE Operation -->
+  <div class="slide" id="slide10">
+    <div class="slide-num">Slide <span>10</span> / 16</div>
+    <h2>➕ CREATE <span style="color:var(--green)">Implementation</span></h2>
+    <div class="slide-sub">// Adding a new product to Firestore</div>
+    <div class="flow">
+      <span class="flow-step">Form Input</span><span class="flow-arrow">→</span>
+      <span class="flow-step">Validate</span><span class="flow-arrow">→</span>
+      <span class="flow-step">Upload Image</span><span class="flow-arrow">→</span>
+      <span class="flow-step">Save to Firestore</span><span class="flow-arrow">→</span>
+      <span class="flow-step">Refresh List</span>
+    </div>
+    <div class="code" data-lang="Dart">
+<span class="ty">Future</span>&lt;<span class="ty">String</span>?&gt; <span class="fn">addProduct</span>({<br>
+&nbsp;&nbsp;<span class="kw">required</span> <span class="ty">String</span> name, <span class="kw">required</span> <span class="ty">double</span> price,<br>
+&nbsp;&nbsp;<span class="kw">required</span> <span class="ty">File</span> imageFile,<br>
+}) <span class="kw">async</span> {<br>
+&nbsp;&nbsp;<span class="kw">try</span> {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// 1. Upload image to Cloudinary/Firebase Storage</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> imageUrl = <span class="kw">await</span> <span class="fn">_uploadImage</span>(imageFile);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// 2. Add document to Firestore</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> docRef = <span class="kw">await</span> _productsCollection.<span class="fn">add</span>({<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">'name'</span>: name, <span class="str">'price'</span>: price, <span class="str">'imageUrl'</span>: imageUrl<br>
+&nbsp;&nbsp;&nbsp;&nbsp;});<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// 3. Update local list</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;_products.<span class="fn">insert</span>(<span class="num">0</span>, <span class="ty">ProductModel</span>(id: docRef.id, ...));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">notifyListeners</span>();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return null</span>;<br>
+&nbsp;&nbsp;} <span class="kw">catch</span> (e) { <span class="kw">return</span> e.<span class="fn">toString</span>(); }<br>
+}
+    </div>
+  </div>
+
+  <!-- SLIDE 11: READ Operation -->
+  <div class="slide" id="slide11">
+    <div class="slide-num">Slide <span>11</span> / 16</div>
+    <h2>📖 READ <span style="color:var(--blue)">Implementation</span></h2>
+    <div class="slide-sub">// Fetching products from Firestore</div>
+    <div class="code" data-lang="Dart">
+<span class="ty">Future</span>&lt;<span class="kw">void</span>&gt; <span class="fn">fetchProducts</span>() <span class="kw">async</span> {<br>
+&nbsp;&nbsp;<span class="kw">if</span> (_isLoading) <span class="kw">return</span>;<br>
+&nbsp;&nbsp;<span class="fn">_setLoading</span>(<span class="kw">true</span>);<br><br>
+&nbsp;&nbsp;<span class="kw">try</span> {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> snapshot = <span class="kw">await</span> _productsCollection<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<span class="fn">orderBy</span>(<span class="str">'createdAt'</span>, descending: <span class="kw">true</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<span class="fn">get</span>();<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;_products = snapshot.docs.<span class="fn">map</span>((doc) =&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">ProductModel</span>.<span class="fn">fromDocument</span>(doc.id, doc.data())<br>
+&nbsp;&nbsp;&nbsp;&nbsp;).<span class="fn">toList</span>();<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">notifyListeners</span>();<br>
+&nbsp;&nbsp;} <span class="kw">catch</span> (e) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">debugPrint</span>(<span class="str">'Error: $e'</span>);<br>
+&nbsp;&nbsp;} <span class="kw">finally</span> { <span class="fn">_setLoading</span>(<span class="kw">false</span>); }<br>
+}
+    </div>
+    <div class="card">
+      <p>💡 <strong>Pro Tip:</strong> Use <code>orderBy()</code> to sort products by date, price, or name. Add indexes in Firebase Console for composite sorting.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 12: UPDATE & DELETE -->
+  <div class="slide" id="slide12">
+    <div class="slide-num">Slide <span>12</span> / 16</div>
+    <h2>✏️ UPDATE &amp; <span style="color:var(--red)">DELETE</span></h2>
+    <div class="slide-sub">// Modifying and removing documents</div>
+    <div class="grid-2">
+      <div class="code" data-lang="Update">
+<span class="ty">Future</span>&lt;<span class="ty">String</span>?&gt; <span class="fn">updateProduct</span>({<br>
+&nbsp;&nbsp;<span class="kw">required</span> <span class="ty">String</span> productId,<br>
+&nbsp;&nbsp;<span class="kw">required</span> <span class="ty">String</span> name,<br>
+&nbsp;&nbsp;<span class="ty">File</span>? newImage,<br>
+}) <span class="kw">async</span> {<br>
+&nbsp;&nbsp;<span class="kw">await</span> _productsCollection.<span class="fn">doc</span>(productId)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.<span class="fn">update</span>({<span class="str">'name'</span>: name});<br>
+&nbsp;&nbsp;<span class="kw">await</span> <span class="fn">fetchProducts</span>();<br>
+}
+      </div>
+      <div class="code" data-lang="Delete">
+<span class="ty">Future</span>&lt;<span class="ty">String</span>?&gt; <span class="fn">deleteProduct</span>(<span class="ty">String</span> id) <span class="kw">async</span> {<br>
+&nbsp;&nbsp;<span class="kw">await</span> _productsCollection<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.<span class="fn">doc</span>(id).<span class="fn">delete</span>();<br>
+&nbsp;&nbsp;_products.<span class="fn">removeWhere</span>((p) =&gt; p.id == id);<br>
+&nbsp;&nbsp;<span class="fn">notifyListeners</span>();<br>
+}
+      </div>
+    </div>
+    <div class="card">
+      <h3>⚠️ Delete Confirmation Pattern</h3>
+      <div class="code" style="margin:0;padding:12px">
+<span class="fn">showDialog</span>&lt;<span class="ty">bool</span>&gt;(<br>
+&nbsp;&nbsp;builder: (ctx) =&gt; <span class="ty">AlertDialog</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;title: <span class="ty">Text</span>(<span class="str">'Delete Product?'</span>),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;actions: [ <span class="ty">TextButton</span>(...), <span class="ty">TextButton</span>(...) ]<br>
+&nbsp;&nbsp;)<br>
+);
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 13: SearchScreen with Filters -->
+  <div class="slide" id="slide13">
+    <div class="slide-num">Slide <span>13</span> / 16</div>
+    <h2>🔍 Search <span style="color:var(--cyan)">Screen</span></h2>
+    <div class="slide-sub">// Real-time search + category filters</div>
+    <div class="code" data-lang="Dart">
+<span class="kw">class</span> <span class="ty">_SearchScreenState</span> <span class="kw">extends</span> <span class="ty">State</span>&lt;<span class="ty">SearchScreen</span>&gt; {<br>
+&nbsp;&nbsp;<span class="ty">String</span> _searchQuery = <span class="str">""</span>;<br>
+&nbsp;&nbsp;<span class="ty">String</span> _selectedCategory = <span class="str">"All"</span>;<br><br>
+&nbsp;&nbsp;<span class="ty">List</span>&lt;<span class="ty">ProductModel</span>&gt; <span class="kw">get</span> _filteredProducts {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">var</span> products = <span class="fn">context</span>.<span class="fn">read</span>&lt;<span class="ty">ProductProvider</span>&gt;().products;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (_searchQuery.<span class="fn">isNotEmpty</span>) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;products = products.<span class="fn">where</span>((p) =&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p.name.<span class="fn">toLowerCase</span>().<span class="fn">contains</span>(_searchQuery.<span class="fn">toLowerCase</span>())<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<span class="fn">toList</span>();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (_selectedCategory != <span class="str">"All"</span>) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;products = products.<span class="fn">where</span>((p) =&gt; p.category == _selectedCategory).<span class="fn">toList</span>();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> products;<br>
+&nbsp;&nbsp;}<br>
+}
+    </div>
+    <div class="flow">
+      <span class="flow-step">User types</span><span class="flow-arrow">→</span>
+      <span class="flow-step">setState()</span><span class="flow-arrow">→</span>
+      <span class="flow-step">Filter products</span><span class="flow-arrow">→</span>
+      <span class="flow-step">Rebuild list</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 14: Refresh Pattern -->
+  <div class="slide" id="slide14">
+    <div class="slide-num">Slide <span>14</span> / 16</div>
+    <h2>🔄 Refresh Pattern</h2>
+    <div class="slide-sub">// Reloading data after navigation returns</div>
+    <div class="code" data-lang="Dart">
+<span class="cm">// In ProductsScreen.dart</span><br>
 floatingActionButton: <span class="ty">FloatingActionButton</span>(<br>
 &nbsp;&nbsp;onPressed: () <span class="kw">async</span> {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Await the result from the form screen</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> result = <span class="kw">await</span> <span class="ty">Navigator</span>.<span class="fn">push</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;context,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">MaterialPageRoute</span>(builder: (_) =&gt; <span class="ty">ProductFormScreen</span>()),<br>
 &nbsp;&nbsp;&nbsp;&nbsp;);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Refresh only if product was saved successfully</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Refresh if product was added/updated</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (result == <span class="kw">true</span> &amp;&amp; mounted) {<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;context.<span class="fn">read</span>&lt;<span class="ty">ProductProvider</span>&gt;().<span class="fn">fetchProducts</span>();<br>
 &nbsp;&nbsp;&nbsp;&nbsp;}<br>
 &nbsp;&nbsp;},<br>
 &nbsp;&nbsp;child: <span class="ty">Icon</span>(<span class="ty">Icons</span>.add),<br>
-),
+);
     </div>
     <div class="card">
-      <h3>Key Points</h3>
       <ul>
-        <li>Use <code>Navigator.pop(context, true)</code> to return a success signal</li>
-        <li>Always check <code>mounted</code> before calling setState or provider methods</li>
-        <li>Refresh data after every Create, Update, and Delete operation</li>
+        <li>✅ Return <code>true</code> from form screen on success</li>
+        <li>✅ Always check <code>mounted</code> before calling provider methods</li>
+        <li>✅ Refresh after Create, Update, and Delete</li>
       </ul>
     </div>
   </div>
 
-  <!-- SLIDE 13: Flow Diagram -->
-  <div class="slide" id="slide13">
-    <div class="slide-num">Slide <span>13</span> / 15</div>
-    <h2>Complete <span style="color:var(--green)">CRUD + Navigation</span> Flow</h2>
-    <div class="slide-sub">// Architecture overview</div>
-    <div class="diagram">
-<span class="dim-hl">┌───────────── MAIN.APP (ROUTES) ──────────────────────────────┐</span>
-│  /Login → /Register → /Root → /Products → /ProductDetail     │
-<span class="dim-hl">└──────────────────────────────────────────────────────────────┘</span>
-                                 ↓
-<span class="dim-blue">┌───────────── PRODUCT PROVIDER ───────────────────────────────┐</span>
-│  <span class="dim-hl">CREATE</span>        <span class="dim-blue">READ</span>         <span class="dim-yellow">UPDATE</span>       <span class="op">DELETE</span>            │
-│  addProduct   fetchProducts updateProduct deleteProduct       │
-<span class="dim-blue">└──────┬──────────────┬──────────────┬──────────────┬──────────┘</span>
-       ↓              ↓              ↓              ↓
-<span class="dim-yellow">┌───────────── FIRESTORE ──────────────────────────────────────┐</span>
-│  products/                                                    │
-│    ├── doc1 { name, price, imageUrl, stock }                  │
-│    ├── doc2 { ... }                                           │
-<span class="dim-yellow">└──────────────────────────────────────────────────────────────┘</span>
-                                 ↓
-┌───────────── UI SCREENS ─────────────────────────────────────┐
-│  ProductsScreen ←─────────────────────────────────┐          │
-│    ├─ onTap  ────→ ProductDetailScreen             │          │
-│    ├─ Edit   ────→ ProductFormScreen (with data) ──┘          │
-│    └─ Delete ────→ Confirmation Dialog                        │
-│  ProductFormScreen → Submit → Add / Update (refresh)         │
-└──────────────────────────────────────────────────────────────┘
-    </div>
-  </div>
-
-  <!-- SLIDE 14: Best Practices -->
-  <div class="slide" id="slide14">
-    <div class="slide-num">Slide <span>14</span> / 15</div>
-    <h2>Best Practices <span style="color:var(--muted);font-size:0.55em;font-weight:400">Summary</span></h2>
-    <div class="grid-2" style="margin-bottom:14px">
-      <div class="card">
-        <h3>CRUD Best Practices</h3>
-        <ul>
-          <li>Always show loading indicators</li>
-          <li>Handle errors gracefully with try/catch</li>
-          <li>Refresh data after every mutation</li>
-          <li>Use confirmation dialogs for delete</li>
-          <li>Validate user input before submitting</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>Navigation Best Practices</h3>
-        <ul>
-          <li>Use named routes for consistency</li>
-          <li>Pass data via constructor or arguments</li>
-          <li>Always check <code>mounted</code> before setState</li>
-          <li>Use pushReplacement for auth flows</li>
-          <li>Return results from pop when needed</li>
-        </ul>
-      </div>
-    </div>
-    <div class="code" data-lang="Quick Reference">
-<span class="cm">// CREATE</span>  <span class="kw">await</span> provider.<span class="fn">addProduct</span>(name: <span class="str">'Laptop'</span>, price: <span class="num">999.99</span>);<br>
-<span class="cm">// READ</span>    <span class="kw">await</span> provider.<span class="fn">fetchProducts</span>();<br>
-<span class="cm">// UPDATE</span>  <span class="kw">await</span> provider.<span class="fn">updateProduct</span>(productId, name: <span class="str">'Gaming Laptop'</span>);<br>
-<span class="cm">// DELETE</span>  <span class="kw">await</span> provider.<span class="fn">deleteProduct</span>(productId);<br>
-<span class="cm">// PUSH</span>    <span class="ty">Navigator</span>.<span class="fn">pushNamed</span>(context, <span class="str">'/detail'</span>, arguments: product);<br>
-<span class="cm">// POP</span>     <span class="ty">Navigator</span>.<span class="fn">pop</span>(context, <span class="kw">true</span>);
-    </div>
-  </div>
-
-  <!-- SLIDE 15: Homework -->
+  <!-- SLIDE 15: Complete Architecture -->
   <div class="slide" id="slide15">
-    <div class="slide-num">Slide <span>15</span> / 15</div>
-    <h2>Homework <span style="color:var(--green)">Assignment</span></h2>
-    <div class="slide-sub">// Tasks to complete before the next session</div>
+    <div class="slide-num">Slide <span>15</span> / 16</div>
+    <h2>🏗️ Complete <span style="color:var(--green)">Architecture</span></h2>
+    <div class="diagram">
+<span class="dim-hl">┌───────────── APP FLOW ─────────────────────────────────────────┐</span>
+│  Splash → Login → Register → Home (with Swiper)                 │
+│                   ↓                                               │
+│              ProductsScreen (GridView)                           │
+│                   ↓                                               │
+│         ProductDetailScreen ← WishlistScreen                     │
+│                   ↓                                               │
+│         ProductFormScreen (Add/Edit)                            │
+<span class="dim-hl">└────────────────────────────────────────────────────────────────┘</span>
+
+<span class="dim-blue">┌───────────── PROVIDER LAYER ────────────────────────────────────┐</span>
+│  ProductProvider   │  WishlistProvider   │  UserProvider         │
+│  - fetchProducts   │  - addToWishlist    │  - login/register     │
+│  - addProduct      │  - removeFromWish   │  - getUser            │
+│  - updateProduct   │  - isInWishlist     │                       │
+│  - deleteProduct   │  - clearWishlist    │                       │
+<span class="dim-blue">└────────────────────────────────────────────────────────────────┘</span>
+
+<span class="dim-yellow">┌───────────── FIREBASE SERVICES ─────────────────────────────────┐</span>
+│  Firestore Database │  Firebase Auth │  Cloudinary Image Hosting │
+<span class="dim-yellow">└────────────────────────────────────────────────────────────────┘</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 16: Homework & Takeaways -->
+  <div class="slide" id="slide16">
+    <div class="slide-num">Slide <span>16</span> / 16</div>
+    <h2>📚 Homework &amp; <span style="color:var(--green)">Takeaways</span></h2>
     <div class="task-list">
-      <div class="task-item"><div class="task-num">1</div><div class="task-text">Create a new product using the form screen</div></div>
-      <div class="task-item"><div class="task-num">2</div><div class="task-text">Display products in a GridView instead of ListView</div></div>
-      <div class="task-item"><div class="task-num">3</div><div class="task-text">Navigate to a detail screen when tapping a product</div></div>
-      <div class="task-item"><div class="task-num">4</div><div class="task-text">Update a product by editing its details in the form</div></div>
-      <div class="task-item"><div class="task-num">5</div><div class="task-text">Delete a product with a confirmation dialog</div></div>
+      <div class="task-item"><div class="task-num">1</div><div class="task-text">Implement the Card Swiper carousel on your home screen</div></div>
+      <div class="task-item"><div class="task-num">2</div><div class="task-text">Add wishlist functionality to the search screen</div></div>
+      <div class="task-item"><div class="task-num">3</div><div class="task-text">Create a dedicated WishlistScreen showing saved products</div></div>
+      <div class="task-item"><div class="task-num">4</div><div class="task-text">Implement category filtering in the search screen</div></div>
+      <div class="task-item"><div class="task-num">5</div><div class="task-text">Add delete confirmation dialog for product deletion</div></div>
     </div>
-    <div class="card" style="border-color:rgba(227,179,65,0.4);margin-top:10px">
-      <h3 style="color:var(--yellow)">⭐ Bonus Challenge</h3>
-      <p>Add a real-time search bar to filter the product list as the user types.</p>
+    <div class="card" style="border-color:rgba(63,185,80,0.4);margin-top:10px">
+      <h3>⭐ Bonus Challenges</h3>
+      <ul>
+        <li>Persist wishlist to Firestore (save across sessions)</li>
+        <li>Add pull-to-refresh on products screen</li>
+        <li>Implement search debouncing for better performance</li>
+      </ul>
     </div>
-    <div class="takeaway" style="margin-top:14px">
-      <div class="takeaway-item"><span class="ti-icon">✓</span>Provider manages state and communicates with Firestore</div>
-      <div class="takeaway-item"><span class="ti-icon">✓</span>CRUD operations are the foundation of every data-driven app</div>
-      <div class="takeaway-item"><span class="ti-icon">✓</span>Always refresh data after Create, Update, or Delete</div>
+    <div class="takeaway">
+      <div class="takeaway-item"><span class="ti-icon">✓</span>Provider is the bridge between UI and business logic</div>
+      <div class="takeaway-item"><span class="ti-icon">✓</span>CRUD operations map directly to Firestore methods</div>
+      <div class="takeaway-item"><span class="ti-icon">✓</span>Always confirm destructive actions (Delete)</div>
+      <div class="takeaway-item"><span class="ti-icon">✓</span>Refresh data after mutations for consistency</div>
+      <div class="takeaway-item"><span class="ti-icon">✓</span>Card Swiper gives professional-looking carousels</div>
     </div>
   </div>
 
 </div>
 
-<!-- Controls -->
-<div id="slide-counter"><span class="cur" id="cur">1</span> / <span id="tot">15</span></div>
+<div id="slide-counter"><span class="cur" id="cur">1</span> / <span id="tot">16</span></div>
 <div id="nav-controls">
   <button class="nav-btn" id="prevBtn" onclick="go(-1)">← Prev</button>
   <button class="nav-btn primary" id="nextBtn" onclick="go(1)">Next →</button>
 </div>
 
 <script>
-  const total = 15;
+  const total = 16;
   let cur = 1;
 
   function go(dir) {
@@ -914,7 +927,6 @@ floatingActionButton: <span class="ty">FloatingActionButton</span>(<br>
     if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(-1);
   });
 
-  // Init
   document.getElementById('tot').textContent = total;
   document.getElementById('progress-bar').style.width = ((1 / total) * 100) + '%';
   document.getElementById('prevBtn').style.opacity = '0.3';
