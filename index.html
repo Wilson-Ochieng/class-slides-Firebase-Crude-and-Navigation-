@@ -1,1029 +1,965 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Firestore CRUD & Navigation — Flutter Diploma (Updated)</title>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0d1117;
-      --surface: #161b22;
-      --surface2: #1c2333;
-      --border: #30363d;
-      --text: #e6edf3;
-      --muted: #8b949e;
-      --green: #3fb950;
-      --blue: #58a6ff;
-      --orange: #f78166;
-      --yellow: #e3b341;
-      --purple: #d2a8ff;
-      --cyan: #79c0ff;
-      --red: #ff7b72;
-      --accent: #3fb950;
-      --mono: 'JetBrains Mono', monospace;
-      --display: 'Syne', sans-serif;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M-Pesa Integration with ngrok | Complete Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0a;
+            --bg-card: #111111;
+            --bg-code: #1a1a2e;
+            --primary: #00b894;
+            --primary-dark: #009379;
+            --secondary: #0984e3;
+            --accent: #6c5ce7;
+            --danger: #d63031;
+            --warning: #fdcb6e;
+            --text: #dfe6e9;
+            --text-muted: #b2bec3;
+            --border: #2d3436;
+            --terminal-bg: #0d1117;
+            --terminal-text: #e6edf3;
+        }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    html, body {
-      width: 100%; height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--display);
-      overflow: hidden;
-    }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            line-height: 1.6;
+        }
 
-    #progress-bar {
-      position: fixed; top: 0; left: 0;
-      height: 2px; background: var(--green);
-      transition: width 0.4s ease;
-      z-index: 200;
-      box-shadow: 0 0 8px var(--green);
-    }
+        /* Navigation */
+        .navbar {
+            position: sticky;
+            top: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            z-index: 100;
+        }
 
-    .slides-wrap {
-      width: 100vw; height: 100vh;
-      position: relative; overflow: hidden;
-    }
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    .slide {
-      position: absolute; inset: 0;
-      display: flex; flex-direction: column;
-      padding: 56px 72px 80px;
-      opacity: 0;
-      transform: translateX(40px);
-      transition: opacity 0.35s ease, transform 0.35s ease;
-      pointer-events: none;
-      overflow-y: auto;
-    }
-    .slide.active {
-      opacity: 1; transform: translateX(0);
-      pointer-events: all; z-index: 10;
-    }
-    .slide.exit {
-      opacity: 0; transform: translateX(-40px);
-      z-index: 5;
-    }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
 
-    .slide-num {
-      font-family: var(--mono);
-      font-size: 11px; color: var(--muted);
-      letter-spacing: 2px; text-transform: uppercase;
-      margin-bottom: 32px;
-    }
-    .slide-num span { color: var(--green); }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
 
-    .slide-title {
-      font-family: var(--display);
-      font-size: clamp(28px, 4vw, 52px);
-      font-weight: 800;
-      line-height: 1.1;
-      margin-bottom: 10px;
-      letter-spacing: -0.5px;
-    }
-    .slide-title .accent { color: var(--green); }
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
 
-    .slide-sub {
-      font-family: var(--mono);
-      font-size: 13px; color: var(--muted);
-      margin-bottom: 40px;
-      letter-spacing: 1px;
-    }
+        .nav-links a:hover {
+            color: var(--primary);
+        }
 
-    h2 {
-      font-family: var(--display);
-      font-size: clamp(20px, 2.8vw, 36px);
-      font-weight: 700;
-      margin-bottom: 8px;
-      letter-spacing: -0.3px;
-    }
-    h3 {
-      font-family: var(--display);
-      font-size: 17px; font-weight: 600;
-      color: var(--blue);
-      margin-bottom: 12px;
-    }
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
 
-    .code {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--green);
-      border-radius: 8px;
-      padding: 20px 24px;
-      font-family: var(--mono);
-      font-size: 13px;
-      line-height: 1.75;
-      color: #cdd9e5;
-      overflow-x: auto;
-      margin: 16px 0;
-      position: relative;
-    }
-    .code::before {
-      content: attr(data-lang);
-      position: absolute; top: 10px; right: 14px;
-      font-size: 10px; letter-spacing: 1.5px;
-      color: var(--muted); text-transform: uppercase;
-    }
-    .kw { color: var(--purple); }
-    .fn { color: var(--blue); }
-    .str { color: var(--yellow); }
-    .cm { color: #6e7681; font-style: italic; }
-    .ty { color: var(--cyan); }
-    .op { color: var(--orange); }
-    .num { color: var(--green); }
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, rgba(0,184,148,0.1) 0%, rgba(108,92,231,0.1) 100%);
+            border-radius: 1rem;
+            margin-bottom: 3rem;
+        }
 
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 22px 26px;
-      margin: 14px 0;
-    }
-    .card ul, .card ol { padding-left: 20px; }
-    .card li {
-      font-size: 15px; line-height: 1.8;
-      color: #cdd9e5;
-    }
-    .card p { font-size: 15px; line-height: 1.7; color: #cdd9e5; }
-    .card code {
-      font-family: var(--mono);
-      font-size: 12px;
-      background: var(--surface2);
-      padding: 2px 6px;
-      border-radius: 4px;
-      color: var(--green);
-    }
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
 
-    .crud-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin: 16px 0;
-    }
-    .crud-tile {
-      border-radius: 10px;
-      padding: 22px;
-      display: flex; flex-direction: column; gap: 6px;
-      border: 1px solid transparent;
-    }
-    .crud-tile .op-letter {
-      font-family: var(--display);
-      font-size: 42px; font-weight: 800;
-      line-height: 1;
-    }
-    .crud-tile .op-name {
-      font-size: 13px; letter-spacing: 2px;
-      text-transform: uppercase; font-family: var(--mono);
-    }
-    .crud-tile .op-desc { font-size: 14px; color: rgba(255,255,255,0.7); }
-    .crud-tile .op-fn {
-      font-family: var(--mono); font-size: 12px;
-      margin-top: 4px; opacity: 0.9;
-    }
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 800px;
+            margin: 0 auto;
+        }
 
-    .c-create { background: rgba(63,185,80,0.1); border-color: rgba(63,185,80,0.3); }
-    .c-create .op-letter { color: var(--green); }
-    .c-create .op-fn { color: var(--green); }
+        .badge-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
 
-    .c-read   { background: rgba(88,166,255,0.1); border-color: rgba(88,166,255,0.3); }
-    .c-read .op-letter { color: var(--blue); }
-    .c-read .op-fn { color: var(--blue); }
+        .badge {
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
 
-    .c-update { background: rgba(227,179,65,0.1); border-color: rgba(227,179,65,0.3); }
-    .c-update .op-letter { color: var(--yellow); }
-    .c-update .op-fn { color: var(--yellow); }
+        .badge-success {
+            background: rgba(0,184,148,0.2);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
 
-    .c-delete { background: rgba(255,123,114,0.1); border-color: rgba(255,123,114,0.3); }
-    .c-delete .op-letter { color: var(--red); }
-    .c-delete .op-fn { color: var(--red); }
+        .badge-warning {
+            background: rgba(253,203,110,0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
 
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin: 16px 0;
-    }
+        .badge-info {
+            background: rgba(9,132,227,0.2);
+            color: var(--secondary);
+            border: 1px solid var(--secondary);
+        }
 
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin: 16px 0;
-    }
+        /* Section Styles */
+        .section {
+            margin-bottom: 3rem;
+        }
 
-    .nav-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin: 16px 0;
-    }
-    .nav-tile {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-top: 3px solid var(--blue);
-      border-radius: 8px;
-      padding: 16px 18px;
-    }
-    .nav-tile .nav-method {
-      font-family: var(--mono); font-size: 12px;
-      color: var(--blue); margin-bottom: 4px;
-    }
-    .nav-tile .nav-desc {
-      font-size: 13px; color: var(--muted);
-    }
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary);
+            display: inline-block;
+        }
 
-    table {
-      width: 100%; border-collapse: collapse;
-      font-size: 14px; margin: 16px 0;
-    }
-    th {
-      background: var(--surface2);
-      color: var(--muted);
-      font-family: var(--mono);
-      font-size: 11px; letter-spacing: 1.5px;
-      text-transform: uppercase;
-      padding: 10px 14px;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-    td {
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
-      color: #cdd9e5;
-      font-family: var(--mono); font-size: 13px;
-    }
+        .card {
+            background: var(--bg-card);
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
 
-    .diagram {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 24px;
-      font-family: var(--mono); font-size: 12px;
-      line-height: 1.9; color: #8b949e;
-      overflow-x: auto;
-      margin: 16px 0;
-    }
-    .diagram .dim-hl { color: var(--green); }
-    .diagram .dim-blue { color: var(--blue); }
-    .diagram .dim-yellow { color: var(--yellow); }
+        .card-header {
+            padding: 1.5rem;
+            background: rgba(0,184,148,0.1);
+            border-bottom: 1px solid var(--border);
+        }
 
-    .tag {
-      display: inline-block;
-      padding: 3px 12px;
-      border-radius: 20px;
-      font-family: var(--mono);
-      font-size: 11px; letter-spacing: 1px;
-      text-transform: uppercase;
-      margin-right: 8px;
-    }
-    .tag-green { background: rgba(63,185,80,0.15); color: var(--green); border: 1px solid rgba(63,185,80,0.4); }
-    .tag-blue  { background: rgba(88,166,255,0.15); color: var(--blue); border: 1px solid rgba(88,166,255,0.4); }
-    .tag-red   { background: rgba(255,123,114,0.15); color: var(--red); border: 1px solid rgba(255,123,114,0.4); }
-    .tag-yellow{ background: rgba(227,179,65,0.15); color: var(--yellow); border: 1px solid rgba(227,179,65,0.4); }
-    .tag-orange{ background: rgba(247,129,102,0.15); color: var(--orange); border: 1px solid rgba(247,129,102,0.4); }
+        .card-header h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
 
-    .flow {
-      display: flex; align-items: center;
-      flex-wrap: wrap; gap: 8px;
-      margin: 14px 0;
-    }
-    .flow-step {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 7px 14px;
-      font-family: var(--mono); font-size: 12px;
-      color: #cdd9e5;
-    }
-    .flow-arrow { color: var(--green); font-size: 16px; }
+        .card-body {
+            padding: 1.5rem;
+        }
 
-    .takeaway {
-      display: flex; flex-direction: column; gap: 10px;
-      margin: 14px 0;
-    }
-    .takeaway-item {
-      display: flex; align-items: flex-start; gap: 12px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 14px 18px;
-      font-size: 14px; line-height: 1.6;
-    }
-    .takeaway-item .ti-icon { color: var(--green); font-size: 16px; flex-shrink: 0; }
+        /* Code Blocks */
+        .code-block {
+            background: var(--bg-code);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            position: relative;
+        }
 
-    .task-list { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
-    .task-item {
-      display: flex; align-items: center; gap: 14px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 14px 18px;
-    }
-    .task-num {
-      width: 28px; height: 28px; border-radius: 50%;
-      background: rgba(63,185,80,0.15);
-      border: 1px solid rgba(63,185,80,0.4);
-      color: var(--green);
-      font-family: var(--mono); font-size: 12px; font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
+        .code-block pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--terminal-text);
+            margin: 0;
+        }
 
-    #nav-controls {
-      position: fixed; bottom: 28px; right: 32px;
-      display: flex; align-items: center; gap: 10px;
-      z-index: 100;
-    }
-    .nav-btn {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 10px 22px;
-      border-radius: 6px;
-      font-family: var(--mono);
-      font-size: 13px; cursor: pointer;
-      transition: background 0.15s, border-color 0.15s;
-    }
-    .nav-btn:hover { background: var(--surface2); border-color: var(--green); }
-    .nav-btn.primary { background: rgba(63,185,80,0.15); border-color: var(--green); color: var(--green); }
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
 
-    #slide-counter {
-      position: fixed; bottom: 28px; left: 32px;
-      font-family: var(--mono); font-size: 12px;
-      color: var(--muted); z-index: 100;
-    }
-    #slide-counter .cur { color: var(--green); font-weight: 700; }
+        .code-lang {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-    .slide::-webkit-scrollbar { width: 4px; }
-    .slide::-webkit-scrollbar-track { background: transparent; }
-    .slide::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        .copy-btn {
+            background: var(--primary-dark);
+            color: white;
+            border: none;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: background 0.3s;
+        }
 
-    @media (max-width: 700px) {
-      .slide { padding: 32px 24px 80px; }
-      .crud-grid, .grid-2, .grid-3, .nav-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+        .copy-btn:hover {
+            background: var(--primary);
+        }
+
+        /* Grid Layout */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        /* Terminal Simulation */
+        .terminal {
+            background: var(--terminal-bg);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .terminal-header {
+            background: #1f2428;
+            padding: 0.5rem 1rem;
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .terminal-dot.red { background: #ff5f56; }
+        .terminal-dot.yellow { background: #ffbd2e; }
+        .terminal-dot.green { background: #27c93f; }
+
+        .terminal-body {
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+        }
+
+        .terminal-prompt {
+            color: var(--primary);
+        }
+
+        /* Step List */
+        .steps {
+            list-style: none;
+            counter-reset: step;
+        }
+
+        .steps li {
+            counter-increment: step;
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .steps li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1.5rem;
+            height: 1.5rem;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* Table */
+        .test-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .test-table th, .test-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .test-table th {
+            background: rgba(0,184,148,0.1);
+            font-weight: 600;
+        }
+
+        .success {
+            color: var(--primary);
+        }
+
+        .error {
+            color: var(--danger);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .nav-links {
+                display: none;
+            }
+            .container {
+                padding: 1rem;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Toggle Switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border);
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .mode-label {
+            font-weight: 600;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dashed var(--primary);
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            z-index: 10;
+        }
+    </style>
 </head>
 <body>
-
-<div id="progress-bar"></div>
-
-<div class="slides-wrap">
-
-  <!-- SLIDE 1: Title -->
-  <div class="slide active" id="slide1">
-    <div class="slide-num">Flutter Diploma Course &nbsp;/&nbsp; <span>Session 7</span></div>
-    <div class="slide-title">Firestore <span class="accent">CRUD</span><br>&amp; Navigation + Cart</div>
-    <div class="slide-sub">// Building complete e-commerce features with Firebase, Provider, Wishlist &amp; Cart</div>
-    <div class="title-tag-row">
-      <span class="tag tag-green">Firestore CRUD</span>
-      <span class="tag tag-blue">Provider</span>
-      <span class="tag tag-red">Wishlist</span>
-      <span class="tag tag-orange">Shopping Cart</span>
-      <span class="tag tag-yellow">Card Swiper</span>
-    </div>
-    <div class="grid-2">
-      <div class="card">
-        <h3>📦 Core Topics</h3>
-        <ul>
-          <li>Firestore CRUD Operations</li>
-          <li>Provider State Management</li>
-          <li>Wishlist Feature Implementation</li>
-          <li>Shopping Cart with Quantity</li>
-          <li>Image Carousel with Card Swiper</li>
-          <li>Navigation & Routing Patterns</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>🎯 What You'll Build</h3>
-        <ul>
-          <li>Product listing with search & filters</li>
-          <li>Add/Edit/Delete products (admin)</li>
-          <li>Wishlist (favorites) functionality</li>
-          <li>Shopping Cart with quantity picker</li>
-          <li>Home screen with auto-scrolling banners</li>
-          <li>Product detail with add to cart</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <!-- SLIDE 2: What is CRUD -->
-  <div class="slide" id="slide2">
-    <div class="slide-num">Slide <span>02</span> / 17</div>
-    <h2>What is <span style="color:var(--green)">CRUD?</span></h2>
-    <div class="slide-sub">// The four fundamental database operations</div>
-    <div class="crud-grid">
-      <div class="crud-tile c-create">
-        <div class="op-letter">C</div>
-        <div class="op-name">Create</div>
-        <div class="op-desc">Add new data to database</div>
-        <div class="op-fn">addProduct()</div>
-      </div>
-      <div class="crud-tile c-read">
-        <div class="op-letter">R</div>
-        <div class="op-name">Read</div>
-        <div class="op-desc">Fetch and display data</div>
-        <div class="op-fn">fetchProducts()</div>
-      </div>
-      <div class="crud-tile c-update">
-        <div class="op-letter">U</div>
-        <div class="op-name">Update</div>
-        <div class="op-desc">Modify existing data</div>
-        <div class="op-fn">updateProduct()</div>
-      </div>
-      <div class="crud-tile c-delete">
-        <div class="op-letter">D</div>
-        <div class="op-name">Delete</div>
-        <div class="op-desc">Remove data permanently</div>
-        <div class="op-fn">deleteProduct()</div>
-      </div>
-    </div>
-    <div class="code" data-lang="Firestore Structure">
-<span class="cm">// Firestore Database Structure</span><br>
-<span class="fn">products</span> <span class="cm">(Collection)</span><br>
-├── <span class="ty">doc_abc123</span> <span class="cm">(Document)</span><br>
-│   ├── <span class="kw">name</span>: <span class="str">"Gaming Laptop"</span><br>
-│   ├── <span class="kw">price</span>: <span class="num">1299.99</span><br>
-│   ├── <span class="kw">category</span>: <span class="str">"Electronics"</span><br>
-│   ├── <span class="kw">stock</span>: <span class="num">15</span><br>
-│   └── <span class="kw">imageUrl</span>: <span class="str">"https://..."</span><br>
-└── <span class="ty">doc_def456</span> <span class="cm">(...)</span>
-    </div>
-  </div>
-
-  <!-- SLIDE 3: Cart Provider -->
-  <div class="slide" id="slide3">
-    <div class="slide-num">Slide <span>03</span> / 17</div>
-    <h2>🛒 Cart <span style="color:var(--orange)">Provider</span></h2>
-    <div class="slide-sub">// Managing shopping cart state with Provider</div>
-    <div class="code" data-lang="Dart">
-<span class="kw">class</span> <span class="ty">CartProvider</span> <span class="kw">with</span> <span class="ty">ChangeNotifier</span> {<br>
-&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">CartModel</span>&gt; _cartItems = {};<br><br>
-&nbsp;&nbsp;<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">CartModel</span>&gt; <span class="kw">get</span> cartItems =&gt; _cartItems;<br>
-&nbsp;&nbsp;<span class="kw">int</span> <span class="kw">get</span> cartCount =&gt; _cartItems.length;<br>
-&nbsp;&nbsp;<span class="kw">double</span> <span class="kw">get</span> totalAmount {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">double</span> total = <span class="num">0.0</span>;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">for</span> (<span class="kw">var</span> item <span class="kw">in</span> _cartItems.values) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;total += item.price * item.quantity;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> total;<br>
-&nbsp;&nbsp;}<br><br>
-&nbsp;&nbsp;<span class="kw">void</span> <span class="fn">addToCart</span>({<span class="kw">required</span> <span class="ty">ProductModel</span> product}) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (_cartItems.<span class="fn">containsKey</span>(product.id)) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_cartItems[product.id]!.quantity++;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;} <span class="kw">else</span> {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_cartItems[product.id] = <span class="ty">CartModel</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;productId: product.id,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;price: product.price,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;quantity: <span class="num">1</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">notifyListeners</span>();<br>
-&nbsp;&nbsp;}<br>
-}
-    </div>
-    <div class="grid-2">
-      <div class="card">
-        <h3>Cart Features</h3>
-        <ul>
-          <li>✅ Add/Remove items</li>
-          <li>✅ Update quantities</li>
-          <li>✅ Calculate totals</li>
-          <li>✅ Persist during session</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>Cart Model</h3>
-        <div class="code" style="margin:0;padding:12px">
-<span class="kw">class</span> <span class="ty">CartModel</span> {<br>
-&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">String</span> productId;<br>
-&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">double</span> price;<br>
-&nbsp;&nbsp;<span class="kw">int</span> quantity;<br>
-}
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">M-Pesa x ngrok</div>
+            <div class="nav-links">
+                <a href="#setup">Setup</a>
+                <a href="#flutter">Flutter</a>
+                <a href="#testing">Testing</a>
+                <a href="#troubleshooting">Troubleshooting</a>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
+    </nav>
 
-  <!-- SLIDE 4: Add to Cart Button -->
-  <div class="slide" id="slide4">
-    <div class="slide-num">Slide <span>04</span> / 17</div>
-    <h2>➕ Add to Cart <span style="color:var(--green)">Button</span></h2>
-    <div class="slide-sub">// Reusable add to cart widget with visual feedback</div>
-    <div class="code" data-lang="Dart">
-<span class="kw">class</span> <span class="ty">AddToCartButton</span> <span class="kw">extends</span> <span class="ty">StatelessWidget</span> {<br>
-&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">ProductModel</span> product;<br>
-&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">bool</span> isCompact;<br><br>
-&nbsp;&nbsp;<span class="op">@override</span><br>
-&nbsp;&nbsp;<span class="ty">Widget</span> <span class="fn">build</span>(<span class="ty">BuildContext</span> context) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> cartProvider = <span class="ty">Provider</span>.<span class="fn">of</span>&lt;<span class="ty">CartProvider</span>&gt;(context);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> isInCart = cartProvider.<span class="fn">isInCart</span>(product.id);<br><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">Material</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderRadius: <span class="ty">BorderRadius</span>.<span class="fn">circular</span>(<span class="num">25</span>),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color: isInCart ? <span class="ty">Colors</span>.green : <span class="ty">Colors</span>.blue,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;child: <span class="ty">InkWell</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderRadius: <span class="ty">BorderRadius</span>.<span class="fn">circular</span>(<span class="num">25</span>),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onTap: () {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (product.stock &gt; <span class="num">0</span>) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cartProvider.<span class="fn">addToCart</span>(product: product);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Show success message</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;child: <span class="ty">Padding</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;padding: isCompact <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;? <span class="kw">const</span> <span class="ty">EdgeInsets</span>.all(<span class="num">8</span>) <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="kw">const</span> <span class="ty">EdgeInsets</span>.symmetric(horizontal: <span class="num">12</span>, vertical: <span class="num">6</span>),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;child: <span class="ty">Row</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mainAxisSize: <span class="ty">MainAxisSize</span>.min,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;children: [<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">Icon</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;isInCart ? <span class="ty">Icons</span>.check : <span class="ty">Icons</span>.shopping_cart,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color: <span class="ty">Colors</span>.white,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (!isCompact && !isInCart) <span class="ty">SizedBox</span>(width: <span class="num">4</span>),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (!isCompact && !isInCart) <span class="ty">Text</span>(<span class="str">'Add'</span>, style: <span class="ty">TextStyle</span>(color: <span class="ty">Colors</span>.white)),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;);<br>
-&nbsp;&nbsp;}<br>
-}
-    </div>
-    <div class="flow">
-      <span class="flow-step">User taps</span><span class="flow-arrow">→</span>
-      <span class="flow-step">Check stock</span><span class="flow-arrow">→</span>
-      <span class="flow-step">Check if in cart</span><span class="flow-arrow">→</span>
-      <span class="flow-step">Add/Update quantity</span><span class="flow-arrow">→</span>
-      <span class="flow-step">Update UI</span>
-    </div>
-  </div>
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1>M-Pesa Integration with ngrok</h1>
+            <p>A complete guide to integrating M-Pesa payments in your Flutter app using ngrok for local development and testing</p>
+            <div class="badge-container">
+                <span class="badge badge-success">✓ M-Pesa Daraja API</span>
+                <span class="badge badge-info">✓ Firebase Functions</span>
+                <span class="badge badge-warning">✓ ngrok Tunnel</span>
+                <span class="badge badge-success">✓ Flutter Integration</span>
+            </div>
+        </div>
 
-  <!-- SLIDE 5: Wishlist Provider -->
-  <div class="slide" id="slide5">
-    <div class="slide-num">Slide <span>05</span> / 17</div>
-    <h2>❤️ Wishlist <span style="color:var(--red)">Provider</span></h2>
-    <div class="slide-sub">// Managing favorites locally or in Firestore</div>
-    <div class="code" data-lang="Dart">
-<span class="kw">class</span> <span class="ty">WishlistProvider</span> <span class="kw">with</span> <span class="ty">ChangeNotifier</span> {<br>
-&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">ProductModel</span>&gt; _wishListItems = {};<br><br>
-&nbsp;&nbsp;<span class="kw">void</span> <span class="fn">addOrRemoveFromWishList</span>({<span class="kw">required</span> <span class="ty">ProductModel</span> product}) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (_wishListItems.<span class="fn">containsKey</span>(product.id)) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_wishListItems.<span class="fn">remove</span>(product.id);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;} <span class="kw">else</span> {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_wishListItems[product.id] = product;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">notifyListeners</span>();<br>
-&nbsp;&nbsp;}<br><br>
-&nbsp;&nbsp;<span class="ty">bool</span> <span class="fn">isProdinWishList</span>({<span class="kw">required</span> <span class="ty">String</span> productId}) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> _wishListItems.<span class="fn">containsKey</span>(productId);<br>
-&nbsp;&nbsp;}<br>
-}
-    </div>
-    <div class="grid-2">
-      <div class="card">
-        <h3>Local Storage Pattern</h3>
-        <ul>
-          <li>✅ Fast, no network latency</li>
-          <li>✅ Works offline</li>
-          <li>⚠️ Lost on app restart (unless persisted)</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>Firestore Pattern</h3>
-        <ul>
-          <li>✅ Persists across devices</li>
-          <li>✅ Syncs across sessions</li>
-          <li>⚠️ Requires internet connection</li>
-        </ul>
-      </div>
-    </div>
-  </div>
+        <!-- Quick Demo Terminal -->
+        <div class="section">
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="terminal-dot red"></div>
+                    <div class="terminal-dot yellow"></div>
+                    <div class="terminal-dot green"></div>
+                    <span style="margin-left: 0.5rem; font-size: 0.7rem;">ngrok tunnel active</span>
+                </div>
+                <div class="terminal-body">
+                    <div><span class="terminal-prompt">$</span> cd ~/smartshop/functions</div>
+                    <div><span class="terminal-prompt">$</span> ngrok http 5001</div>
+                    <div><br></div>
+                    <div>Session Status                online</div>
+                    <div>Forwarding                    https://122f-41-139-172-215.ngrok-free.app -> http://localhost:5001</div>
+                    <div><br></div>
+                    <div><span class="terminal-prompt">$</span> curl https://122f-41-139-172-215.ngrok-free.app/demprojo/us-central1/api/health</div>
+                    <div>{"status":"healthy","timestamp":"2026-05-15T10:49:16.443Z"}</div>
+                    <div><br></div>
+                    <div><span class="terminal-prompt">$</span> curl -X POST https://122f-41-139-172-215.ngrok-free.app/demprojo/us-central1/api/initiate-stk-push \</div>
+                    <div>  -H "Content-Type: application/json" \</div>
+                    <div>  -d '{"phone":"254708374149","amount":10,"orderId":"test_001"}'</div>
+                    <div><br></div>
+                    <div>{"MerchantRequestID":"df32-4182-b083-18ef0f79bbf622554",</div>
+                    <div> "CheckoutRequestID":"ws_CO_15052026133744426702430127",</div>
+                    <div> "ResponseCode":"0",</div>
+                    <div> "ResponseDescription":"Success. Request accepted for processing"}</div>
+                </div>
+            </div>
+        </div>
 
-  <!-- SLIDE 6: Heart Button Widget -->
-  <div class="slide" id="slide6">
-    <div class="slide-num">Slide <span>06</span> / 17</div>
-    <h2>❤️ Heart Button <span style="color:var(--orange)">Widget</span></h2>
-    <div class="slide-sub">// Reusable favorite toggler with visual feedback</div>
-    <div class="code" data-lang="Dart">
-<span class="kw">class</span> <span class="ty">HeartButtonWidget</span> <span class="kw">extends</span> <span class="ty">StatelessWidget</span> {<br>
-&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">ProductModel</span> product;<br>
-&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">double</span> size;<br>
-&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">Color</span> bkgColor;<br><br>
-&nbsp;&nbsp;<span class="op">@override</span><br>
-&nbsp;&nbsp;<span class="ty">Widget</span> <span class="fn">build</span>(<span class="ty">BuildContext</span> context) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> wishlistProvider = <span class="ty">Provider</span>.<span class="fn">of</span>&lt;<span class="ty">WishlistProvider</span>&gt;(context);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> isInWishlist = wishlistProvider.<span class="fn">isProdinWishList</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;productId: product.id);<br><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">Container</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;decoration: <span class="ty">BoxDecoration</span>(color: bkgColor, shape: <span class="ty">BoxShape</span>.circle),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;child: <span class="ty">IconButton</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onPressed: () =&gt; wishlistProvider.<span class="fn">addOrRemoveFromWishList</span>(product: product),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;icon: <span class="ty">Icon</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;isInWishlist ? <span class="ty">Icons</span>.favorite : <span class="ty">Icons</span>.favorite_border,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color: isInWishlist ? <span class="ty">Colors</span>.red : <span class="ty">Colors</span>.grey,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;size: size,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;);<br>
-&nbsp;&nbsp;}<br>
-}
-    </div>
-  </div>
+        <!-- Setup Section -->
+        <div class="section" id="setup">
+            <h2 class="section-title">📦 Step 1: Install ngrok</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>🖥️ Linux / macOS</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-btn" onclick="copyToClipboard('linux-install')">Copy</button>
+                            </div>
+                            <pre id="linux-install"># Download ngrok
+wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
 
-  <!-- SLIDE 7: Card Swiper Package -->
-  <div class="slide" id="slide7">
-    <div class="slide-num">Slide <span>07</span> / 17</div>
-    <h2>🖼️ Card Swiper <span style="color:var(--cyan)">Package</span></h2>
-    <div class="slide-sub">// Adding auto-scrolling image carousels to your app</div>
-    <div class="code" data-lang="Dart">
-<span class="cm">// Add to pubspec.yaml</span><br>
-<span class="str">dependencies:</span><br>
-&nbsp;&nbsp;<span class="str">card_swiper: ^3.0.1</span><br><br>
-<span class="cm">// Usage in HomeScreen</span><br>
-<span class="ty">SizedBox</span>(<br>
-&nbsp;&nbsp;height: size.height * <span class="num">0.25</span>,<br>
-&nbsp;&nbsp;child: <span class="ty">ClipRRect</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;borderRadius: <span class="ty">BorderRadius</span>.<span class="fn">circular</span>(<span class="num">50</span>),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;child: <span class="ty">Swiper</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;autoplay: <span class="kw">true</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;itemBuilder: (ctx, index) =&gt; <span class="ty">Image</span>.<span class="fn">asset</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;banners[index], fit: <span class="ty">BoxFit</span>.cover),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;itemCount: banners.length,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pagination: <span class="ty">SwiperPagination</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;builder: <span class="ty">DotSwiperPaginationBuilder</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;activeColor: <span class="ty">Colors</span>.red,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color: <span class="ty">Colors</span>.white<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;)<br>
-&nbsp;&nbsp;)<br>
-)
-    </div>
-  </div>
+# Extract
+sudo tar xvzf ngrok-v3-stable-linux-amd64.tgz -C /usr/local/bin
 
-  <!-- SLIDE 8: Product Widget with Cart -->
-  <div class="slide" id="slide8">
-    <div class="slide-num">Slide <span>08</span> / 17</div>
-    <h2>📦 Product <span style="color:var(--green)">Widget</span> with Cart</h2>
-    <div class="slide-sub">// Reusable product card with add to cart + wishlist</div>
-    <div class="code" data-lang="Dart">
-<span class="kw">class</span> <span class="ty">ProductWidget</span> <span class="kw">extends</span> <span class="ty">StatelessWidget</span> {<br>
-&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">ProductModel</span> product;<br>
-&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">bool</span> isCompact;<br><br>
-&nbsp;&nbsp;<span class="op">@override</span><br>
-&nbsp;&nbsp;<span class="ty">Widget</span> <span class="fn">build</span>(<span class="ty">BuildContext</span> context) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> cartProvider = <span class="ty">Provider</span>.<span class="fn">of</span>&lt;<span class="ty">CartProvider</span>&gt;(context);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> isInCart = cartProvider.<span class="fn">isInCart</span>(product.id);<br><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">Container</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;decoration: <span class="ty">BoxDecoration</span>(...),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;child: <span class="ty">Column</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;children: [<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Image with heart overlay</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">Stack</span>(...),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Product info with price and add button</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">Row</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;children: [<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">Text</span>(<span class="str">'KES \${product.price}'</span>),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">AddToCartButton</span>(product: product, isCompact: isCompact),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;);<br>
-&nbsp;&nbsp;}<br>
-}
-    </div>
-  </div>
+# Verify
+ngrok --version</pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>🍎 macOS (Homebrew)</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-btn" onclick="copyToClipboard('mac-install')">Copy</button>
+                            </div>
+                            <pre id="mac-install"># Using Homebrew
+brew install ngrok
 
-  <!-- SLIDE 9: Cart Screen -->
-  <div class="slide" id="slide9">
-    <div class="slide-num">Slide <span>09</span> / 17</div>
-    <h2>🛒 Cart <span style="color:var(--orange)">Screen</span></h2>
-    <div class="slide-sub">// Displaying cart items with quantity controls</div>
-    <div class="code" data-lang="Dart">
-<span class="kw">class</span> <span class="ty">CartScreen</span> <span class="kw">extends</span> <span class="ty">StatelessWidget</span> {<br>
-&nbsp;&nbsp;<span class="op">@override</span><br>
-&nbsp;&nbsp;<span class="ty">Widget</span> <span class="fn">build</span>(<span class="ty">BuildContext</span> context) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">Consumer</span>&lt;<span class="ty">CartProvider</span>&gt;(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;builder: (ctx, cartProvider, _) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (cartProvider.cartItems.<span class="fn">isEmpty</span>) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">EmptyCartWidget</span>();<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="ty">Column</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;children: [<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// List of cart items</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">Expanded</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;child: <span class="ty">ListView</span>.<span class="fn">builder</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;itemCount: cartProvider.cartItems.length,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;itemBuilder: (ctx, i) =&gt; <span class="ty">CartItemWidget</span>(...),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Bottom total bar</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">Container</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;padding: <span class="kw">const</span> <span class="ty">EdgeInsets</span>.all(<span class="num">16</span>),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;child: <span class="ty">Row</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mainAxisAlignment: <span class="ty">MainAxisAlignment</span>.spaceBetween,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;children: [<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">Text</span>(<span class="str">'Total:'</span>),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">Text</span>(<span class="str">'KES \${cartProvider.totalAmount}'</span>),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;&nbsp;&nbsp;);<br>
-&nbsp;&nbsp;}<br>
-}
-    </div>
-  </div>
+# Verify
+ngrok --version</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-  <!-- SLIDE 10: Navigation Types -->
-  <div class="slide" id="slide10">
-    <div class="slide-num">Slide <span>10</span> / 17</div>
-    <h2>Navigation <span style="color:var(--blue)">in Flutter</span></h2>
-    <div class="slide-sub">// Navigator 2.0 patterns and best practices</div>
-    <div class="nav-grid">
-      <div class="nav-tile"><div class="nav-method">Navigator.push()</div><div class="nav-desc">Go to new screen (can come back)</div></div>
-      <div class="nav-tile"><div class="nav-method">Navigator.pop()</div><div class="nav-desc">Go back to previous screen</div></div>
-      <div class="nav-tile"><div class="nav-method">Navigator.pushNamed()</div><div class="nav-desc">Use registered route names</div></div>
-      <div class="nav-tile"><div class="nav-method">Navigator.pushReplacement()</div><div class="nav-desc">Replace current screen (login flow)</div></div>
-    </div>
-    <table>
-      <tr><th>Method</th><th>Code Example</th><th>Use Case</th></tr>
-      <tr><td>Push</td><td><code>Navigator.push(...)</code></td><td>Go to detail screen</td></tr>
-      <tr><td>PushNamed</td><td><code>Navigator.pushNamed('/detail')</code></td><td>Named route navigation</td></tr>
-      <tr><td>Pop with Result</td><td><code>Navigator.pop(context, true)</code></td><td>Return data after form submit</td></tr>
-    </table>
-  </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3>🔐 Configure ngrok Authentication</h3>
+                </div>
+                <div class="card-body">
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">bash</span>
+                            <button class="copy-btn" onclick="copyToClipboard('ngrok-auth')">Copy</button>
+                        </div>
+                        <pre id="ngrok-auth"># Get your authtoken from https://dashboard.ngrok.com/auth
+ngrok config add-authtoken YOUR_AUTH_TOKEN_HERE</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-  <!-- SLIDE 11: Passing Data to Detail Screen -->
-  <div class="slide" id="slide11">
-    <div class="slide-num">Slide <span>11</span> / 17</div>
-    <h2>Passing Data <span style="color:var(--yellow)">to Detail Screen</span></h2>
-    <div class="slide-sub">// Two approaches explained</div>
-    <div class="grid-2">
-      <div class="code" data-lang="Constructor">
-<span class="cm">// NAVIGATE (push)</span><br>
-<span class="ty">Navigator</span>.<span class="fn">push</span>(<br>
-&nbsp;&nbsp;context,<br>
-&nbsp;&nbsp;<span class="ty">MaterialPageRoute</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;builder: (_) =&gt; <span class="ty">ProductDetailScreen</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;product: product<br>
-&nbsp;&nbsp;&nbsp;&nbsp;)<br>
-&nbsp;&nbsp;)<br>
-);<br><br>
-<span class="cm">// RECEIVE</span><br>
-<span class="kw">class</span> <span class="ty">ProductDetailScreen</span> {<br>
-&nbsp;&nbsp;<span class="kw">final</span> <span class="ty">ProductModel</span> product;<br>
-&nbsp;&nbsp;<span class="kw">const</span> <span class="fn">ProductDetailScreen</span>({<span class="kw">required</span> <span class="kw">this</span>.product});<br>
-}
-      </div>
-      <div class="code" data-lang="Named Route">
-<span class="cm">// NAVIGATE (pushNamed)</span><br>
-<span class="ty">Navigator</span>.<span class="fn">pushNamed</span>(<br>
-&nbsp;&nbsp;context,<br>
-&nbsp;&nbsp;<span class="ty">ProductDetailScreen</span>.routName,<br>
-&nbsp;&nbsp;arguments: product<br>
-);<br><br>
-<span class="cm">// RECEIVE (in didChangeDependencies)</span><br>
-<span class="kw">final</span> product = <span class="ty">ModalRoute</span>.<span class="fn">of</span>(context)!<br>
-&nbsp;&nbsp;.settings.arguments <span class="kw">as</span> <span class="ty">ProductModel</span>;
-      </div>
-    </div>
-  </div>
+        <!-- Firebase Functions Setup -->
+        <div class="section">
+            <h2 class="section-title">🔥 Step 2: Firebase Functions Setup</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📁 Create .env File</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">env</span>
+                                <button class="copy-btn" onclick="copyToClipboard('env-file')">Copy</button>
+                            </div>
+                            <pre id="env-file"># functions/.env
+MPESA_CONSUMER_KEY=your_consumer_key
+MPESA_CONSUMER_SECRET=your_consumer_secret
+MPESA_SHORTCODE=174379
+MPESA_PASSKEY=bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919
+MPESA_CALLBACK_URL=http://localhost:5001/demprojo/us-central1/api/mpesa-callback</pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📦 Install Dependencies</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-btn" onclick="copyToClipboard('install-deps')">Copy</button>
+                            </div>
+                            <pre id="install-deps">cd functions
+npm install express cors axios dotenv</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-  <!-- SLIDE 12: CREATE Operation -->
-  <div class="slide" id="slide12">
-    <div class="slide-num">Slide <span>12</span> / 17</div>
-    <h2>➕ CREATE <span style="color:var(--green)">Implementation</span></h2>
-    <div class="slide-sub">// Adding a new product to Firestore</div>
-    <div class="flow">
-      <span class="flow-step">Form Input</span><span class="flow-arrow">→</span>
-      <span class="flow-step">Validate</span><span class="flow-arrow">→</span>
-      <span class="flow-step">Upload Image</span><span class="flow-arrow">→</span>
-      <span class="flow-step">Save to Firestore</span><span class="flow-arrow">→</span>
-      <span class="flow-step">Refresh List</span>
-    </div>
-    <div class="code" data-lang="Dart">
-<span class="ty">Future</span>&lt;<span class="ty">String</span>?&gt; <span class="fn">addProduct</span>({<br>
-&nbsp;&nbsp;<span class="kw">required</span> <span class="ty">String</span> name, <span class="kw">required</span> <span class="ty">double</span> price,<br>
-&nbsp;&nbsp;<span class="kw">required</span> <span class="ty">File</span> imageFile,<br>
-}) <span class="kw">async</span> {<br>
-&nbsp;&nbsp;<span class="kw">try</span> {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// 1. Upload image to Cloudinary/Firebase Storage</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> imageUrl = <span class="kw">await</span> <span class="fn">_uploadImage</span>(imageFile);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// 2. Add document to Firestore</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> docRef = <span class="kw">await</span> _productsCollection.<span class="fn">add</span>({<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">'name'</span>: name, <span class="str">'price'</span>: price, <span class="str">'imageUrl'</span>: imageUrl<br>
-&nbsp;&nbsp;&nbsp;&nbsp;});<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// 3. Update local list</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;_products.<span class="fn">insert</span>(<span class="num">0</span>, <span class="ty">ProductModel</span>(id: docRef.id, ...));<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">notifyListeners</span>();<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return null</span>;<br>
-&nbsp;&nbsp;} <span class="kw">catch</span> (e) { <span class="kw">return</span> e.<span class="fn">toString</span>(); }<br>
-}
-    </div>
-  </div>
+        <!-- Flutter Configuration -->
+        <div class="section" id="flutter">
+            <h2 class="section-title">📱 Step 3: Flutter App Configuration</h2>
+            <div class="card">
+                <div class="card-header">
+                    <h3>API Configuration</h3>
+                </div>
+                <div class="card-body">
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">dart</span>
+                            <button class="copy-btn" onclick="copyToClipboard('api-config')">Copy</button>
+                        </div>
+                        <pre id="api-config">// lib/config/api_config.dart
+class ApiConfig {
+  // Update with your ngrok URL
+  static const String ngrokUrl = 'https://YOUR_NGROK_URL.ngrok-free.app';
+  static const String projectId = 'demprojo';
+  
+  static String get baseUrl => '$ngrokUrl/$projectId/us-central1/api';
+  
+  static String get health => '$baseUrl/health';
+  static String get initiateStkPush => '$baseUrl/initiate-stk-push';
+  static String get checkPayment => '$baseUrl/check-payment';
+  static String get mpesaCallback => '$baseUrl/mpesa-callback';
+  
+  static const bool useNgrok = true;
+}</pre>
+                    </div>
+                </div>
+            </div>
 
-  <!-- SLIDE 13: READ Operation -->
-  <div class="slide" id="slide13">
-    <div class="slide-num">Slide <span>13</span> / 17</div>
-    <h2>📖 READ <span style="color:var(--blue)">Implementation</span></h2>
-    <div class="slide-sub">// Fetching products from Firestore</div>
-    <div class="code" data-lang="Dart">
-<span class="ty">Future</span>&lt;<span class="kw">void</span>&gt; <span class="fn">fetchProducts</span>() <span class="kw">async</span> {<br>
-&nbsp;&nbsp;<span class="kw">if</span> (_isLoading) <span class="kw">return</span>;<br>
-&nbsp;&nbsp;<span class="fn">_setLoading</span>(<span class="kw">true</span>);<br><br>
-&nbsp;&nbsp;<span class="kw">try</span> {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">final</span> snapshot = <span class="kw">await</span> _productsCollection<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<span class="fn">orderBy</span>(<span class="str">'createdAt'</span>, descending: <span class="kw">true</span>)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<span class="fn">get</span>();<br><br>
-&nbsp;&nbsp;&nbsp;&nbsp;_products = snapshot.docs.<span class="fn">map</span>((doc) =&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ty">ProductModel</span>.<span class="fn">fromDocument</span>(doc.id, doc.data())<br>
-&nbsp;&nbsp;&nbsp;&nbsp;).<span class="fn">toList</span>();<br><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">notifyListeners</span>();<br>
-&nbsp;&nbsp;} <span class="kw">catch</span> (e) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">debugPrint</span>(<span class="str">'Error: $e'</span>);<br>
-&nbsp;&nbsp;} <span class="kw">finally</span> { <span class="fn">_setLoading</span>(<span class="kw">false</span>); }<br>
-}
-    </div>
-    <div class="card">
-      <p>💡 <strong>Pro Tip:</strong> Use <code>orderBy()</code> to sort products by date, price, or name. Add indexes in Firebase Console for composite sorting.</p>
-    </div>
-  </div>
-
-  <!-- SLIDE 14: UPDATE & DELETE -->
-  <div class="slide" id="slide14">
-    <div class="slide-num">Slide <span>14</span> / 17</div>
-    <h2>✏️ UPDATE &amp; <span style="color:var(--red)">DELETE</span></h2>
-    <div class="slide-sub">// Modifying and removing documents</div>
-    <div class="grid-2">
-      <div class="code" data-lang="Update">
-<span class="ty">Future</span>&lt;<span class="ty">String</span>?&gt; <span class="fn">updateProduct</span>({<br>
-&nbsp;&nbsp;<span class="kw">required</span> <span class="ty">String</span> productId,<br>
-&nbsp;&nbsp;<span class="kw">required</span> <span class="ty">String</span> name,<br>
-&nbsp;&nbsp;<span class="ty">File</span>? newImage,<br>
-}) <span class="kw">async</span> {<br>
-&nbsp;&nbsp;<span class="kw">await</span> _productsCollection.<span class="fn">doc</span>(productId)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;.<span class="fn">update</span>({<span class="str">'name'</span>: name});<br>
-&nbsp;&nbsp;<span class="kw">await</span> <span class="fn">fetchProducts</span>();<br>
-}
-      </div>
-      <div class="code" data-lang="Delete">
-<span class="ty">Future</span>&lt;<span class="ty">String</span>?&gt; <span class="fn">deleteProduct</span>(<span class="ty">String</span> id) <span class="kw">async</span> {<br>
-&nbsp;&nbsp;<span class="kw">await</span> _productsCollection<br>
-&nbsp;&nbsp;&nbsp;&nbsp;.<span class="fn">doc</span>(id).<span class="fn">delete</span>();<br>
-&nbsp;&nbsp;_products.<span class="fn">removeWhere</span>((p) =&gt; p.id == id);<br>
-&nbsp;&nbsp;<span class="fn">notifyListeners</span>();<br>
-}
-      </div>
-    </div>
-    <div class="card">
-      <h3>⚠️ Delete Confirmation Pattern</h3>
-      <div class="code" style="margin:0;padding:12px">
-<span class="fn">showDialog</span>&lt;<span class="ty">bool</span>&gt;(<br>
-&nbsp;&nbsp;builder: (ctx) =&gt; <span class="ty">AlertDialog</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;title: <span class="ty">Text</span>(<span class="str">'Delete Product?'</span>),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;actions: [ <span class="ty">TextButton</span>(...), <span class="ty">TextButton</span>(...) ]<br>
-&nbsp;&nbsp;)<br>
-);
-      </div>
-    </div>
-  </div>
-
-  <!-- SLIDE 15: SearchScreen with Filters -->
-  <div class="slide" id="slide15">
-    <div class="slide-num">Slide <span>15</span> / 17</div>
-    <h2>🔍 Search <span style="color:var(--cyan)">Screen</span></h2>
-    <div class="slide-sub">// Real-time search + category filters</div>
-    <div class="code" data-lang="Dart">
-<span class="kw">class</span> <span class="ty">_SearchScreenState</span> <span class="kw">extends</span> <span class="ty">State</span>&lt;<span class="ty">SearchScreen</span>&gt; {<br>
-&nbsp;&nbsp;<span class="ty">String</span> _searchQuery = <span class="str">""</span>;<br>
-&nbsp;&nbsp;<span class="ty">String</span> _selectedCategory = <span class="str">"All"</span>;<br><br>
-&nbsp;&nbsp;<span class="ty">List</span>&lt;<span class="ty">ProductModel</span>&gt; <span class="kw">get</span> _filteredProducts {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">var</span> products = <span class="fn">context</span>.<span class="fn">read</span>&lt;<span class="ty">ProductProvider</span>&gt;().products;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (_searchQuery.<span class="fn">isNotEmpty</span>) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;products = products.<span class="fn">where</span>((p) =&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p.name.<span class="fn">toLowerCase</span>().<span class="fn">contains</span>(_searchQuery.<span class="fn">toLowerCase</span>())<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<span class="fn">toList</span>();<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (_selectedCategory != <span class="str">"All"</span>) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;products = products.<span class="fn">where</span>((p) =&gt; p.category == _selectedCategory).<span class="fn">toList</span>();<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> products;<br>
-&nbsp;&nbsp;}<br>
-}
-    </div>
-    <div class="flow">
-      <span class="flow-step">User types</span><span class="flow-arrow">→</span>
-      <span class="flow-step">setState()</span><span class="flow-arrow">→</span>
-      <span class="flow-step">Filter products</span><span class="flow-arrow">→</span>
-      <span class="flow-step">Rebuild list</span>
-    </div>
-  </div>
-
-  <!-- SLIDE 16: Complete Architecture -->
-  <div class="slide" id="slide16">
-    <div class="slide-num">Slide <span>16</span> / 17</div>
-    <h2>🏗️ Complete <span style="color:var(--green)">Architecture</span></h2>
-    <div class="diagram">
-<span class="dim-hl">┌───────────── APP FLOW ─────────────────────────────────────────┐</span>
-│  Splash → Login → Register → Home (with Swiper)                 │
-│                   ↓                                               │
-│              ProductsScreen (GridView)                           │
-│                   ↓                                               │
-│         ProductDetailScreen ← WishlistScreen ← CartScreen        │
-│                   ↓                                               │
-│         ProductFormScreen (Add/Edit)                            │
-<span class="dim-hl">└────────────────────────────────────────────────────────────────┘</span>
-
-<span class="dim-blue">┌───────────── PROVIDER LAYER ────────────────────────────────────┐</span>
-│  ProductProvider   │  WishlistProvider   │  CartProvider         │
-│  - fetchProducts   │  - addToWishlist    │  - addToCart          │
-│  - addProduct      │  - removeFromWish   │  - removeFromCart     │
-│  - updateProduct   │  - isInWishlist     │  - updateQuantity     │
-│  - deleteProduct   │  - clearWishlist    │  - getTotal           │
-<span class="dim-blue">└────────────────────────────────────────────────────────────────┘</span>
-
-<span class="dim-yellow">┌───────────── FIREBASE SERVICES ─────────────────────────────────┐</span>
-│  Firestore Database │  Firebase Auth │  Cloudinary Image Hosting │
-<span class="dim-yellow">└────────────────────────────────────────────────────────────────┘</span>
-    </div>
-  </div>
-
-  <!-- SLIDE 17: Homework & Takeaways -->
-  <div class="slide" id="slide17">
-    <div class="slide-num">Slide <span>17</span> / 17</div>
-    <h2>📚 Homework &amp; <span style="color:var(--green)">Takeaways</span></h2>
-    <div class="task-list">
-      <div class="task-item"><div class="task-num">1</div><div class="task-text">Implement the Card Swiper carousel on your home screen</div></div>
-      <div class="task-item"><div class="task-num">2</div><div class="task-text">Add wishlist functionality to the search screen</div></div>
-      <div class="task-item"><div class="task-num">3</div><div class="task-text">Create a dedicated WishlistScreen showing saved products</div></div>
-      <div class="task-item"><div class="task-num">4</div><div class="task-text">Implement shopping cart with quantity picker</div></div>
-      <div class="task-item"><div class="task-num">5</div><div class="task-text">Add delete confirmation dialog for product deletion</div></div>
-      <div class="task-item"><div class="task-num">6</div><div class="task-text">Display cart badge count in app bar</div></div>
-    </div>
-    <div class="card" style="border-color:rgba(63,185,80,0.4);margin-top:10px">
-      <h3>⭐ Bonus Challenges</h3>
-      <ul>
-        <li>Persist wishlist and cart to Firestore (save across sessions)</li>
-        <li>Add pull-to-refresh on products screen</li>
-        <li>Implement search debouncing for better performance</li>
-        <li>Add stock validation when adding to cart</li>
-      </ul>
-    </div>
-    <div class="takeaway">
-      <div class="takeaway-item"><span class="ti-icon">✓</span>Provider is the bridge between UI and business logic</div>
-      <div class="takeaway-item"><span class="ti-icon">✓</span>CRUD operations map directly to Firestore methods</div>
-      <div class="takeaway-item"><span class="ti-icon">✓</span>Always confirm destructive actions (Delete)</div>
-      <div class="takeaway-item"><span class="ti-icon">✓</span>Refresh data after mutations for consistency</div>
-      <div class="takeaway-item"><span class="ti-icon">✓</span>Cart and Wishlist need separate state management</div>
-      <div class="takeaway-item"><span class="ti-icon">✓</span>Validate stock before adding to cart</div>
-    </div>
-  </div>
-
-</div>
-
-<div id="slide-counter"><span class="cur" id="cur">1</span> / <span id="tot">17</span></div>
-<div id="nav-controls">
-  <button class="nav-btn" id="prevBtn" onclick="go(-1)">← Prev</button>
-  <button class="nav-btn primary" id="nextBtn" onclick="go(1)">Next →</button>
-</div>
-
-<script>
-  const total = 17;
-  let cur = 1;
-
-  function go(dir) {
-    const next = cur + dir;
-    if (next < 1 || next > total) return;
-    const current = document.getElementById('slide' + cur);
-    current.classList.remove('active');
-    current.classList.add('exit');
-    setTimeout(() => current.classList.remove('exit'), 400);
-    cur = next;
-    const target = document.getElementById('slide' + cur);
-    target.classList.add('active');
-    target.scrollTop = 0;
-    document.getElementById('cur').textContent = cur;
-    document.getElementById('progress-bar').style.width = ((cur / total) * 100) + '%';
-    document.getElementById('prevBtn').style.opacity = cur === 1 ? '0.3' : '1';
-    document.getElementById('nextBtn').style.opacity = cur === total ? '0.3' : '1';
+            <div class="card">
+                <div class="card-header">
+                    <h3>M-Pesa Service</h3>
+                </div>
+                <div class="card-body">
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">dart</span>
+                            <button class="copy-btn" onclick="copyToClipboard('mpesa-service')">Copy</button>
+                        </div>
+                        <pre id="mpesa-service">// lib/services/mpesa_service.dart
+class MpesaService {
+  Future&lt;Map&lt;String, dynamic&gt;&gt; initiateStkPush({
+    required String phone,
+    required int amount,
+    required String orderId,
+  }) async {
+    final url = Uri.parse(ApiConfig.initiateStkPush);
+    
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'phone': phone,
+        'amount': amount,
+        'orderId': orderId,
+      }),
+    );
+    
+    if (response.statusCode == 200) {
+      return {'success': true, 'data': jsonDecode(response.body)};
+    }
+    return {'success': false, 'error': 'HTTP ${response.statusCode}'};
   }
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-  document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
-    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(-1);
-  });
+        <!-- Testing Section -->
+        <div class="section" id="testing">
+            <h2 class="section-title">🧪 Step 4: Testing Endpoints</h2>
+            
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>1️⃣ Health Check</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="code-block">
+                            <pre>curl https://YOUR_NGROK_URL.ngrok-free.app/demprojo/us-central1/api/health</pre>
+                        </div>
+                        <p class="success">✓ Expected: {"status":"healthy"}</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>2️⃣ Configuration Check</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="code-block">
+                            <pre>curl https://YOUR_NGROK_URL.ngrok-free.app/demprojo/us-central1/api/test-config</pre>
+                        </div>
+                        <p class="success">✓ Shows which env vars are set</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>3️⃣ STK Push Test</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="code-block">
+                            <pre>curl -X POST https://YOUR_NGROK_URL.ngrok-free.app/demprojo/us-central1/api/initiate-stk-push \
+  -H "Content-Type: application/json" \
+  -d '{"phone":"254708374149","amount":10,"orderId":"test_001"}'</pre>
+                        </div>
+                        <p class="success">✓ ResponseCode "0" means success</p>
+                    </div>
+                </div>
+            </div>
 
-  document.getElementById('tot').textContent = total;
-  document.getElementById('progress-bar').style.width = ((1 / total) * 100) + '%';
-  document.getElementById('prevBtn').style.opacity = '0.3';
-</script>
+            <!-- Test Script -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>📜 Complete Test Script</h3>
+                </div>
+                <div class="card-body">
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">bash</span>
+                            <button class="copy-btn" onclick="copyToClipboard('test-script')">Copy</button>
+                        </div>
+                        <pre id="test-script">#!/bin/bash
+
+NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | python3 -c "import sys, json; print(json.load(sys.stdin)['tunnels'][0]['public_url'])" 2>/dev/null)
+BASE_URL="$NGROK_URL/demprojo/us-central1/api"
+
+echo "🧪 Testing M-Pesa Endpoints"
+echo "📍 URL: $BASE_URL"
+
+# Test Health
+curl -s "$BASE_URL/health" | jq .
+
+# Test STK Push
+curl -s -X POST "$BASE_URL/initiate-stk-push" \
+  -H "Content-Type: application/json" \
+  -d "{\"phone\":\"254708374149\",\"amount\":10,\"orderId\":\"test_$(date +%s)\"}" | jq .</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Start Services -->
+        <div class="section">
+            <h2 class="section-title">🚀 Step 5: Start Services</h2>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Terminal 1</h3>
+                        <p>Firebase Emulator</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="code-block">
+                            <pre>cd ~/smartshop
+firebase emulators:start --only functions</pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Terminal 2</h3>
+                        <p>ngrok Tunnel</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="code-block">
+                            <pre>cd ~/smartshop/functions
+ngrok http 5001</pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Terminal 3</h3>
+                        <p>Flutter App</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="code-block">
+                            <pre>cd ~/smartshop
+flutter run</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Data -->
+        <div class="section">
+            <h2 class="section-title">📱 Test Phone Numbers</h2>
+            <table class="test-table">
+                <thead>
+                    <tr><th>Phone Number</th><th>PIN</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>254708374149</td><td>1234</td><td class="success">✓ Working (Sandbox)</td></tr>
+                    <tr><td>254712345678</td><td>1234</td><td class="success">✓ Working</td></tr>
+                    <tr><td>Your Personal Number</td><td>Your PIN</td><td class="warning">⚠️ Must be registered</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Troubleshooting -->
+        <div class="section" id="troubleshooting">
+            <h2 class="section-title">🔧 Troubleshooting</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>❌ Port Already in Use</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="code-block">
+                            <pre>sudo fuser -k 4000/tcp 4400/tcp 4500/tcp 5001/tcp
+pkill -f firebase
+pkill -f ngrok</pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>❌ ngrok URL Changed</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="code-block">
+                            <pre># Get new URL
+curl -s http://localhost:4040/api/tunnels | python3 -c "import sys, json; print(json.load(sys.stdin)['tunnels'][0]['public_url'])"
+
+# Update ApiConfig.ngrokUrl and .env file</pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>❌ Callback Not Received</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="code-block">
+                            <pre># Check ngrok traffic
+open http://localhost:4040
+
+# Watch Firebase logs
+firebase functions:log --only api --tail</pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>❌ Network Error in Flutter</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul class="steps" style="list-style: none; padding-left: 0;">
+                            <li>✓ Ensure ngrok is running</li>
+                            <li>✓ Update ApiConfig.ngrokUrl</li>
+                            <li>✓ Restart Flutter app</li>
+                            <li>✓ Check internet connection</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Reference -->
+        <div class="section">
+            <h2 class="section-title">📋 Quick Reference</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>🔑 M-Pesa Sandbox Credentials</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="test-table">
+                            <tr><td><strong>Consumer Key</strong></td><td>Get from <a href="https://developer.safaricom.co.ke/" style="color: var(--primary);">Daraja Portal</a></td></tr>
+                            <tr><td><strong>Passkey</strong></td><td><code>bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919</code></td></tr>
+                            <tr><td><strong>Shortcode</strong></td><td>174379</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📡 Useful URLs</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="test-table">
+                            <tr><td>Local API</td><td><code>http://localhost:5001/demprojo/us-central1/api</code></td></tr>
+                            <tr><td>ngrok Dashboard</td><td><code>http://127.0.0.1:4040</code></td></tr>
+                            <tr><td>Firebase Console</td><td><code>https://console.firebase.google.com</code></td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Architecture Diagram -->
+        <div class="section">
+            <h2 class="section-title">🏗️ Architecture Flow</h2>
+            <div class="card">
+                <div class="card-body">
+                    <div class="code-block" style="background: var(--bg-dark); text-align: center;">
+                        <pre style="font-size: 0.7rem;">
+┌─────────────┐     ┌─────────────┐     ┌─────────────────┐     ┌─────────────┐
+│  Flutter    │────▶│   ngrok     │────▶│    Firebase     │────▶│   M-Pesa    │
+│    App      │◀────│   Tunnel    │◀────│   Emulator      │◀────│  Sandbox    │
+└─────────────┘     └─────────────┘     └─────────────────┘     └─────────────┘
+      │                   │                       │                      │
+      │                   │                       │                      │
+      ▼                   ▼                       ▼                      ▼
+ localhost          Public URL              localhost:5001         api.safaricom
+   emulator          (https://...)            Functions                 .co.ke</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>M-Pesa Integration Demo | Built with Flutter + Firebase + ngrok</p>
+            <p style="margin-top: 0.5rem; font-size: 0.8rem;">Test Phone: 254708374149 | PIN: 1234 | Amount: Any amount</p>
+        </div>
+    </div>
+
+    <script>
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                // Show temporary notification
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Add tooltip functionality
+        document.querySelectorAll('.tooltip').forEach(el => {
+            el.setAttribute('data-tip', el.getAttribute('title') || 'More info');
+            el.removeAttribute('title');
+        });
+    </script>
 </body>
 </html>
